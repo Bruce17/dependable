@@ -15,6 +15,7 @@ exports.container = function () {
 
     var factories = {};
     var modules = {};
+    var container = {};
 
     // Define some regex
     var regex = {
@@ -304,17 +305,28 @@ exports.container = function () {
         return get("__temp", overrides, []);
     };
 
+    /**
+     * Clear all dependencies
+     */
+    var clearAll = function () {
+        factories = {};
+        modules = {};
+
+        // Let people access the container if they know what they're doing
+        container.register('_container', container);
+    };
+
     // Preppare the public functions to be passed to the outer world
-    var container = {
+    container = {
         get: get,
         resolve: resolve,
         register: register,
         load: load,
-        list: list
+        list: list,
+        clearAll: clearAll
     };
 
-    // Let people access the container if they know what they're doing
-    container.register('_container', container);
+    clearAll();
 
     return container;
 };
