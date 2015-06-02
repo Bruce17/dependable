@@ -6,6 +6,12 @@
     "node": ">=0.10.0",
     "iojs": ">=1.0.0"
   },
+  "keywords": [
+    "dependency",
+    "injection",
+    "ci",
+    "ioc"
+  ],
   "author": "Sean Hess",
   "contributors": [
     {
