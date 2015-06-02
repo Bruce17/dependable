@@ -1,3 +1,7 @@
+# 1.1.0
+
+- Critical fix: module and factory dependencies are now stored the complete node runtime, not only while the package is included into the current file.
+
 # 1.0.2
 
 - Updated readme
