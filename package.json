@@ -1,5 +1,5 @@
 {
-  "name": "dependable",
+  "name": "@bruce17/dependable",
   "version": "1.0.0",
   "main": "source/index.js",
   "engines": {
