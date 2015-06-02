@@ -308,6 +308,11 @@ exports.container = function () {
         return get('__temp', overrides, []);
     };
 
+    var registerContainer = function () {
+        // Let people access the container if they know what they're doing
+        container.register('_container', container);
+    };
+
     /**
      * Clear all dependencies
      */
@@ -315,8 +320,7 @@ exports.container = function () {
         factories = {};
         modules = {};
 
-        // Let people access the container if they know what they're doing
-        container.register('_container', container);
+        registerContainer();
     };
 
     // Prepare the public functions to be passed to the outer world
@@ -329,7 +333,7 @@ exports.container = function () {
         clearAll: clearAll
     };
 
-    clearAll();
+    registerContainer();
 
     return container;
 };
