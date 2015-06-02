@@ -319,7 +319,7 @@ exports.container = function () {
         container.register('_container', container);
     };
 
-    // Preppare the public functions to be passed to the outer world
+    // Prepare the public functions to be passed to the outer world
     container = {
         get: get,
         resolve: resolve,
