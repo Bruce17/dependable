@@ -9,12 +9,15 @@ var fs = require('fs');
 
 var existsSync = (fs.existsSync ? fs.existsSync : path.existsSync);
 
+// Define all dependencies outside the container function to keep them
+var factories = {};
+var modules = {};
+
 //simple dependency injection. No nesting, just pure simplicity
 exports.container = function () {
     'use strict';
 
-    var factories = {};
-    var modules = {};
+    var container = {};
 
     // Define some regex
     var regex = {
@@ -229,6 +232,7 @@ exports.container = function () {
             visited = [];
         }
 
+        /* jshint -W116 */
         var isOverridden = (overrides != null);
 
         // Check for circular dependencies
@@ -241,7 +245,7 @@ exports.container = function () {
         if (!factory) {
             var module = modules[name];
 
-            if (!module) {
+            if (module) {
                 register(name, require(module));
                 factory = factories[name];
             }
@@ -252,7 +256,7 @@ exports.container = function () {
 
         // Use the one you already created
         if (factory.instance && !isOverridden) {
-            return factory.instance
+            return factory.instance;
         }
 
         // Apply args to the right
@@ -300,21 +304,32 @@ exports.container = function () {
             overrides = null;
         }
 
-        register("__temp", func);
-        return get("__temp", overrides, []);
+        register('__temp', func);
+        return get('__temp', overrides, []);
     };
 
-    // Preppare the public functions to be passed to the outer world
-    var container = {
+    /**
+     * Clear all dependencies
+     */
+    var clearAll = function () {
+        factories = {};
+        modules = {};
+
+        // Let people access the container if they know what they're doing
+        container.register('_container', container);
+    };
+
+    // Prepare the public functions to be passed to the outer world
+    container = {
         get: get,
         resolve: resolve,
         register: register,
         load: load,
-        list: list
+        list: list,
+        clearAll: clearAll
     };
 
-    // Let people access the container if they know what they're doing
-    container.register('_container', container);
+    clearAll();
 
     return container;
 };
