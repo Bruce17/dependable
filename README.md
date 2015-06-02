@@ -1,4 +1,9 @@
-# Dependable [![Build Status](https://travis-ci.org/idottv/dependable.png)](https://travis-ci.org/idottv/dependable)
+Dependable
+==========
+
+[![code climate](https://img.shields.io/codeclimate/github/Bruce17/dependable.svg?style=flat-square)](https://codeclimate.com/github/Bruce17/dependable)
+[![Travis CI](https://travis-ci.org/Bruce17/dependable.svg?style=flat-square)](https://travis-ci.org/Bruce17/dependable)
+
 
 A minimalist dependency injection framework for node.js.
 
