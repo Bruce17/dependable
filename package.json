@@ -9,7 +9,8 @@
   "keywords": [
     "dependency",
     "injection",
-    "ci",
+    "di",
+    "container",
     "ioc"
   ],
   "author": "Sean Hess",
