@@ -1,3 +1,7 @@
+# 1.1.1
+
+- Do not clear container every time a new container is created.
+
 # 1.1.0
 
 - Critical fix: module and factory dependencies are now stored the complete node runtime, not only while the package is included into the current file.
