@@ -4,7 +4,7 @@
  * @date   02.06.2015 11:38
  */
 
-var container = require('../source/index').container;
+var container = require('../source/index').container();
 var assert = require('assert');
 var fs = require('fs');
 var os = require('os');
@@ -15,6 +15,11 @@ var path = require('path');
  */
 describe('inject', function () {
     var testFiles = [];
+
+    beforeEach(function () {
+        // Remove all dependencies from the dependency container
+        container.clearAll();
+    });
 
     afterEach(function () {
         // After each test, delete temporary files
@@ -29,9 +34,7 @@ describe('inject', function () {
 
 
     it('should create a container', function () {
-        var deps = container();
-
-        assert.ok(deps);
+        assert.ok(container);
     });
 
     it('should return module without deps', function () {
@@ -39,10 +42,9 @@ describe('inject', function () {
             return 'abc';
         };
 
-        var deps = container();
-        deps.register('abc', Abc);
+        container.register('abc', Abc);
         
-        assert.equal(deps.get('abc'), 'abc');
+        assert.equal(container.get('abc'), 'abc');
     });
 
     it('should get a single dependency', function () {
@@ -54,11 +56,10 @@ describe('inject', function () {
             return ['one', 'two'];
         };
 
-        var deps = container();
-        deps.register('stuff', Stuff);
-        deps.register('names', Names);
+        container.register('stuff', Stuff);
+        container.register('names', Names);
 
-        assert.equal(deps.get('stuff'), 'one');
+        assert.equal(container.get('stuff'), 'one');
     });
 
     it('should resovle multiple dependencies', function () {
@@ -98,12 +99,11 @@ describe('inject', function () {
             };
         };
 
-        var deps = container();
-        deps.register('Post', post);
-        deps.register('Users', users);
-        deps.register('Comments', comments);
+        container.register('Post', post);
+        container.register('Users', users);
+        container.register('Comments', comments);
 
-        var PostClass = deps.get('Post');
+        var PostClass = container.get('Post');
 
         var apost = new PostClass([
             {
@@ -158,17 +158,16 @@ describe('inject', function () {
             };
         };
 
-        var deps = container();
-        deps.register('name', name);
-        deps.register('people', people);
-        deps.register('places', places);
+        container.register('name', name);
+        container.register('people', people);
+        container.register('places', places);
 
         var peopleDb = db({});
         var placesDb = db({});
-        var peoplez = deps.get('people', {
+        var peoplez = container.get('people', {
             db: peopleDb
         });
-        var placez = deps.get('places', {
+        var placez = container.get('places', {
             db: placesDb
         });
 
@@ -207,12 +206,11 @@ describe('inject', function () {
             };
         };
 
-        var deps = container();
-        deps.register('gpa', gpa);
-        deps.register('dad', dad);
-        deps.register('son', son);
+        container.register('gpa', gpa);
+        container.register('dad', dad);
+        container.register('son', son);
 
-        var ason = deps.get('son');
+        var ason = container.get('son');
 
         assert.equal(ason.age, 46);
     });
@@ -226,13 +224,12 @@ describe('inject', function () {
             return one + 2;
         };
 
-        var deps = container();
-        deps.register('one', one);
-        deps.register('two', two);
+        container.register('one', one);
+        container.register('two', two);
 
         var err;
         try {
-            deps.get('one');
+            container.get('one');
         }
         catch (e) {
             err = e;
@@ -242,23 +239,21 @@ describe('inject', function () {
     });
 
     it('should NOT throw circular dependency error if two modules require the same thing', function () {
-        var deps = container();
-
-        deps.register('name', function () {
+        container.register('name', function () {
             return 'bob';
         });
-        deps.register('one', function (name) {
+        container.register('one', function (name) {
             return name + ' one';
         });
-        deps.register('two', function (name) {
+        container.register('two', function (name) {
             return name + ' two';
         });
-        deps.register('all', function (one, two) {
+        container.register('all', function (one, two) {
             return one.name + ' ' + two.name;
         });
 
         try {
-            deps.get('all');
+            container.get('all');
         }
         catch (e) {
             assert.ok(false, 'should not have thrown error');
@@ -266,27 +261,23 @@ describe('inject', function () {
     });
 
     it('should list dependencies registered', function () {
-        var deps = container();
-
-        deps.register('one', function (name) {
+        container.register('one', function (name) {
             return name + ' one';
         });
-        deps.register('two', function (name) {
+        container.register('two', function (name) {
             return name + ' two';
         });
 
-        var list = deps.list();
+        var list = container.list();
 
         assert.equal(list.one.func('1'), '1 one');
         assert.equal(list.two.func('2'), '2 two');
     });
 
     it('should throw error if it cant find dependency', function () {
-        var deps = container();
-
         var err;
         try {
-            deps.get('one');
+            container.get('one');
         }
         catch (e) {
             err = e;
@@ -296,15 +287,13 @@ describe('inject', function () {
     });
 
     it('should throw error if it cant find dependency of dependency', function () {
-        var deps = container();
-
-        deps.register('one', function (two) {
+        container.register('one', function (two) {
             return 'one';
         });
 
         var err;
         try {
-            deps.get('one');
+            container.get('one');
         }
         catch (e) {
             err = e;
@@ -314,19 +303,17 @@ describe('inject', function () {
     });
 
     it('should let you get multiple dependencies at once, injector style', function (done) {
-        var deps = container();
-
-        deps.register('name', function () {
+        container.register('name', function () {
             return 'bob';
         });
-        deps.register('one', function (name) {
+        container.register('one', function (name) {
             return name + ' one';
         });
-        deps.register('two', function (name) {
+        container.register('two', function (name) {
             return name + ' two';
         });
 
-        deps.resolve(function (one, two) {
+        container.resolve(function (one, two) {
             assert.ok(one);
             assert.ok(two);
             assert.equal(one, 'bob one');
@@ -337,45 +324,39 @@ describe('inject', function () {
     });
 
     it('should return the SAME instance to everyone', function () {
-        var deps = container();
-
-        deps.register('asdf', function () {
+        container.register('asdf', function () {
             return {
                 woot: 'hi'
             };
         });
-        deps.register('a', function (asdf) {
-            return asdf.a = 'a';
+        container.register('a', function (asdf) {
+            asdf.a = 'a';
         });
-        deps.register('b', function (asdf) {
-            return asdf.b = 'b';
+        container.register('b', function (asdf) {
+            asdf.b = 'b';
         });
 
-        var asdf = deps.get('asdf');
-        var a = deps.get('a');
-        var b = deps.get('b');
+        var asdf = container.get('asdf');
+        var a = container.get('a');
+        var b = container.get('b');
 
         assert.equal(asdf.a, 'a');
         assert.equal(asdf.b, 'b');
     });
 
     it('should inject the container (_container)', function () {
-        var deps = container();
-
-        assert.equal(deps.get('_container'), deps);
+        assert.equal(container.get('_container'), container);
     });
 
     describe('cache', function () {
         it('should re-use the same instance', function () {
-            var deps = container();
-
-            deps.register('a', function () {
+            container.register('a', function () {
                 return {
                     one: 'one'
                 };
             });
 
-            var a = deps.get('a');
+            var a = container.get('a');
 
             assert.deepEqual(a, {
                 one: 'one'
@@ -384,7 +365,7 @@ describe('inject', function () {
                 one: 'one'
             });
 
-            var a2 = deps.get('a');
+            var a2 = container.get('a');
 
             assert.equal(a, a2);
         });
@@ -392,16 +373,14 @@ describe('inject', function () {
 
     describe('overrides', function () {
         it('should override a dependency', function () {
-            var deps = container();
-
-            deps.register('a', function (b) {
+            container.register('a', function (b) {
                 return {
                     value: b
                 };
             });
-            deps.register('b', 'b');
+            container.register('b', 'b');
 
-            var a = deps.get('a', {
+            var a = container.get('a', {
                 b: 'henry'
             });
 
@@ -409,37 +388,33 @@ describe('inject', function () {
         });
 
         it('should not cache when you override', function () {
-            var deps = container();
-
-            deps.register('a', function (b) {
+            container.register('a', function (b) {
                 return {
                     value: b
                 };
             });
-            deps.register('b', 'b');
+            container.register('b', 'b');
 
-            var overriddenA = deps.get('a', {
+            var overriddenA = container.get('a', {
                 b: 'henry'
             });
 
-            var a = deps.get('a');
+            var a = container.get('a');
 
             assert.notEqual(a.value, 'henry', 'it cached the override value');
             assert.equal(a.value, 'b');
         });
 
         it('should ignore the cache when you override', function () {
-            var deps = container();
-
-            deps.register('a', function (b) {
+            container.register('a', function (b) {
                 return {
                     value: b
                 };
             });
-            deps.register('b', 'b');
+            container.register('b', 'b');
 
-            var a = deps.get('a');
-            var overriddenA = deps.get('a', {
+            var a = container.get('a');
+            var overriddenA = container.get('a', {
                 b: 'henry'
             });
 
@@ -448,16 +423,14 @@ describe('inject', function () {
         });
 
         it('should override on resolve', function (done) {
-            var deps = container();
-
-            deps.register('a', function (b) {
+            container.register('a', function (b) {
                 return {
                     value: b
                 };
             });
-            deps.register('b', 'b');
+            container.register('b', 'b');
 
-            deps.resolve({
+            container.resolve({
                 b: 'bob'
             }, function (a) {
                 assert.equal(a.value, 'bob');
@@ -468,28 +441,27 @@ describe('inject', function () {
 
     describe('file helpers', function () {
         it('should let you register a file', function (done) {
-            var afile = path.join(os.tmpDir(), "A.js");
-            var acode = "module.exports = function() { return 'a' }";
+            var afile = path.join(os.tmpDir(), 'A.js');
+            var acode = 'module.exports = function() { return "a" }';
             testFiles.push(afile);
 
-            var bfile = path.join(os.tmpDir(), "B.js");
-            var bcode = "module.exports = function(A) { return A + 'b' }";
+            var bfile = path.join(os.tmpDir(), 'B.js');
+            var bcode = 'module.exports = function(A) { return A + "b" }';
             testFiles.push(bfile);
 
             fs.writeFile(afile, acode, function (err) {
                 assert.ifError(err);
 
-                var deps = container();
-                var loadResult = deps.load(afile);
+                container.load(afile);
 
-                var a = deps.get('A');
+                var a = container.get('A');
                 assert.equal(a, 'a');
 
                 fs.writeFile(bfile, bcode, function (err) {
                     assert.ifError(err);
 
-                    deps.load(bfile);
-                    var b = deps.get('B');
+                    container.load(bfile);
+                    var b = container.get('B');
                     assert.equal(b, 'ab');
 
                     done();
@@ -500,12 +472,12 @@ describe('inject', function () {
         it('should let you register a whole directory', function (done) {
             var dir = path.join(os.tmpDir(), 'testinject');
 
-            var afile = path.join(dir, "A.js");
-            var acode = "module.exports = function() { return 'a' }";
+            var afile = path.join(dir, 'A.js');
+            var acode = 'module.exports = function() { return "a" }';
             testFiles.push(afile);
 
-            var bfile = path.join(dir, "B.js");
-            var bcode = "module.exports = function(A) { return A + 'b' }";
+            var bfile = path.join(dir, 'B.js');
+            var bcode = 'module.exports = function(A) { return A + "b" }';
             testFiles.push(bfile);
 
             fs.mkdir(dir, function (err) {
@@ -515,10 +487,9 @@ describe('inject', function () {
                     fs.writeFile(bfile, bcode, function (err) {
                         assert.ifError(err);
 
-                        var deps = container();
-                        deps.load(dir);
+                        container.load(dir);
 
-                        var b = deps.get('B');
+                        var b = container.get('B');
                         assert.equal(b, 'ab');
 
                         done();
@@ -537,12 +508,12 @@ describe('inject', function () {
         xit('should be lazy', function (done) {
             var dir = path.join(os.tmpDir(), 'testinject');
 
-            var cfile = path.join(dir, "C.js");
-            var ccode = "throw new Error('Should not be loaded because we do not require it');";
+            var cfile = path.join(dir, 'C.js');
+            var ccode = 'throw new Error("Should not be loaded because we do not require it");';
             testFiles.push(cfile);
 
-            var dfile = path.join(dir, "D.js");
-            var dcode = "module.exports = function() { return 'd'; };";
+            var dfile = path.join(dir, 'D.js');
+            var dcode = 'module.exports = function() { return "d"; };';
             testFiles.push(dfile);
 
             fs.mkdir(dir, function (err) {
@@ -552,10 +523,9 @@ describe('inject', function () {
                     fs.writeFile(dfile, dcode, function (err) {
                         assert.ifError(err);
 
-                        var deps = container();
-                        deps.load(dir);
+                        container.load(dir);
 
-                        assert.equal('d', deps.get('D'));
+                        assert.equal('d', container.get('D'));
                         done();
                     });
                 });
@@ -565,30 +535,48 @@ describe('inject', function () {
 
     describe('simple dependencies', function () {
         it('doesnt have to be a function. objects work too', function () {
-            var deps = container();
-            deps.register('a', 'a');
+            container.register('a', 'a');
 
-            assert.equal(deps.get('a'), 'a');
+            assert.equal(container.get('a'), 'a');
         });
     });
-    
+
     describe('registering a hash', function () {
         it('should register a hash of key : dep pairs', function () {
-            var deps = container();
-            deps.register({
+            container.register({
                 a: 'a',
                 b: 'b'
             });
 
-            assert.equal(deps.get('a'), 'a');
-            assert.equal(deps.get('b'), 'b');
+            assert.equal(container.get('a'), 'a');
+            assert.equal(container.get('b'), 'b');
+        });
+
+        it('should register a hash of key : dep (object, class) pairs', function () {
+            var depA = function () {
+                return 'foo bar';
+            };
+            var depB = {
+                foo: 'bar',
+                num: 123
+            };
+
+            container.register({
+                a: function () {
+                    return depA;
+                },
+                b: depB
+            });
+
+            assert.equal(container.get('a'), depA);
+            assert.equal(container.get('b'), depB);
         });
     });
-    
+
     describe('nested containers', function () {
         it('should inherit deps from the parent');
     });
-    
+
     describe('maybe', function () {
         it('should support objects/data instead of functions?');
         it('should support optional dependencies?');
