@@ -2,6 +2,10 @@
   "name": "dependable",
   "version": "1.0.0",
   "main": "source/index.js",
+  "engines": {
+    "node": ">=0.10.0",
+    "iojs": ">=1.0.0"
+  },
   "author": "Sean Hess",
   "contributors": [
     {
