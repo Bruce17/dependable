@@ -1,4 +1,9 @@
-# Dependable [![Build Status](https://travis-ci.org/idottv/dependable.png)](https://travis-ci.org/idottv/dependable)
+Dependable
+==========
+
+[![code climate](https://img.shields.io/codeclimate/github/Bruce17/dependable.svg?style=flat-square)](https://codeclimate.com/github/Bruce17/dependable)
+[![Travis CI](https://travis-ci.org/Bruce17/dependable.svg?style=flat-square)](https://travis-ci.org/Bruce17/dependable)
+
 
 A minimalist dependency injection framework for node.js.
 
@@ -150,9 +155,13 @@ Sounds like a hit!
 
 ## Development
 
-Dependable is written in coffeescript. To generate javascript, run `npm run prepublish`.
-
 Tests are written with mocha. To run the tests, run `npm test`.
+
+## Notice
+
+This is a fork of the original [dependable](https://github.com/idottv/dependable) node module.
+The original module on npm was outdated and not maintenanced any more.
+I forked the original one, removed coffee script (ugly crab in my eyes) and made the whole thing work again.
 
 ## License
 

@@ -1,21 +1,34 @@
 {
   "name": "dependable",
-  "version": "0.2.5",
-  "main": "index.js",
+  "version": "1.0.0",
+  "main": "source/index.js",
+  "engines": {
+    "node": ">=0.10.0",
+    "iojs": ">=1.0.0"
+  },
   "author": "Sean Hess",
-  "contributors": ["Jamison Dance <jergason@gmail.com> (http://jamisondance.com)"],
+  "contributors": [
+    {
+      "name": "Jamison Dance",
+      "email": "jergason@gmail.com",
+      "url": "http://jamisondance.com"
+    },
+    {
+      "name": "Michael Raith",
+      "email": "Bruce17@users.noreply.github.com",
+      "url": "https://github.com/Bruce17"
+    }
+  ],
   "repository": {
-    "url": "git@github.com:idottv/dependable.git"
+    "type": "git",
+    "url": "https://github.com/Bruce17/dependable"
   },
   "scripts": {
-    "test": "node_modules/.bin/mocha -R spec --compilers coffee:coffee-script test/*",
-    "prepublish": "node_modules/.bin/coffee -c index.coffee"
+    "test": "node_modules/.bin/mocha -R spec test/*.spec.js"
   },
   "license": "MIT",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
-    "mocha": "1.3.0",
-    "coffee-script": "~1.3.3"
+    "mocha": "^2.2.5"
   }
 }
