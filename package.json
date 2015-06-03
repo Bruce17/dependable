@@ -1,6 +1,6 @@
 {
   "name": "@bruce17/dependable",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "main": "source/index.js",
   "engines": {
     "node": ">=0.10.0",
@@ -31,11 +31,16 @@
     "url": "https://github.com/Bruce17/dependable"
   },
   "scripts": {
-    "test": "node_modules/.bin/mocha -R spec test/*.spec.js"
+    "test": "node_modules/.bin/mocha -R spec ",
+    "test-watch": "node_modules/.bin/mocha -R nyan --watch"
   },
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "mocha": "^2.2.5"
+    "chai": "^2.3.0",
+    "mocha": "^2.2.5",
+    "should": "^6.0.3",
+    "sinon": "^1.14.1",
+    "sinon-chai": "^2.7.0"
   }
 }

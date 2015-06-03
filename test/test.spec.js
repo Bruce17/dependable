@@ -62,7 +62,7 @@ describe('inject', function () {
         assert.equal(container.get('stuff'), 'one');
     });
 
-    it('should resovle multiple dependencies', function () {
+    it('should resolve multiple dependencies', function () {
         var post = function (Comments, Users) {
             var Post;
             return Post = (function () {
@@ -580,5 +580,90 @@ describe('inject', function () {
     describe('maybe', function () {
         it('should support objects/data instead of functions?');
         it('should support optional dependencies?');
+    });
+
+
+    /****************************************
+     * New improved test style:
+     * - first:  describe the testable method
+     * - second: check if method exists
+     * - third:  test behaviour
+     *
+     * @todo: convert old tests into new format
+     */
+
+    describe('registerLibrary()', function () {
+        var libA, libB;
+        var depA, depB;
+
+        beforeEach(function () {
+            libA = function () {
+                return 'foo bar';
+            };
+            libB = function () {
+                return {num: 123};
+            };
+
+            depA = function () {
+                return 'a';
+            };
+            depB = function (depA) {
+                return depA + 'b';
+            };
+        });
+
+        it('should exist', function () {
+            expect(container.registerLibrary).to.be.ok;
+            expect(container.registerLibrary).to.be.a('function');
+        });
+
+        it('should register a library function', function () {
+            container.registerLibrary('libA', libA);
+            container.registerLibrary('libB', libB);
+
+            expect(container.get('libA')).to.equal(libA);
+            expect(container.get('libA')).to.not.equal(libB);
+            expect(container.get('libB')).to.equal(libB);
+            expect(container.get('libB')).to.not.equal(libA);
+        });
+
+        it('should register a library function via hash', function () {
+            container.registerLibrary({
+                libA: libA,
+                libB: libB
+            });
+
+            expect(container.get('libA')).to.equal(libA);
+            expect(container.get('libA')).to.not.equal(libB);
+            expect(container.get('libB')).to.equal(libB);
+            expect(container.get('libB')).to.not.equal(libA);
+        });
+
+        it('should register a library and normal dependency', function () {
+            container.register({
+                depA: depA,
+                depB: depB
+            });
+            container.registerLibrary({
+                libA: libA,
+                libB: libB
+            });
+
+            // Check libraries
+            var resultLibA = container.get('libA');
+            var resultLibB = container.get('libB');
+            expect(resultLibA).to.equal(libA);
+            expect(resultLibB).to.equal(libB);
+
+            // Execute library and check result
+            expect(libA()).to.equal('foo bar');
+            expect(libB()).to.deep.equal({num: 123});
+
+            // Check dependency result
+            expect(container.get('depA')).to.not.equal(depA);
+            expect(container.get('depA')).to.equal('a');
+            expect(container.get('depB')).to.not.equal(depB);
+            expect(container.get('depB')).to.equal('ab');
+        });
     });
 });

@@ -44,7 +44,7 @@ exports.container = function () {
 
             for (key in hash) {
                 if (hash.hasOwnProperty(key)) {
-                    results.push(registerOne(key, hash[key]))
+                    results.push(registerOne(key, hash[key]));
                 }
             }
 
@@ -56,15 +56,53 @@ exports.container = function () {
     };
 
     /**
+     * Register a library dependency in the di-container.
+     *
+     * Difference between "register" and "registerLibrary": This method registers library methods which export a bunch
+     * of methods via the module pattern. This methods wraps the actual library into another function to avoid the
+     * library to be executed directly and to avoid dependency injection of function arguments.
+     *
+     * @param {string|object} name Register a library dependency by its name (+ function) or a hash-set at once.
+     * @param {function}      func If a name is given, register this function.
+     *
+     * @returns {Array|function}
+     */
+    var registerLibrary = function (name, func) {
+        if (name === Object(name)) {
+            var hash = name;
+            var results = [];
+
+            var key;
+
+            for (key in hash) {
+                if (hash.hasOwnProperty(key)) {
+                    /* jshint -W083 */
+                    results.push(registerOne(key, (function (library) {
+                        return function () {
+                            return library;
+                        };
+                    })(hash[key])));
+                }
+            }
+
+            return results;
+        }
+        else {
+            return registerOne(name, function () {
+                return func;
+            });
+        }
+    };
+
+    /**
      * Register a new dependency.
      *
      * @param {string}   name
      * @param {function} func
-     * @param {boolean}  isFile Add a note to load this dependency lazy on request, because it is a module in a file.
      *
      * @returns {function}
      */
-    var registerOne = function (name, func, isFile) {
+    var registerOne = function (name, func) {
         if (!func) {
             throw new Error('Cannot register empty function!');
         }
@@ -170,7 +208,6 @@ exports.container = function () {
         if (typeof func === 'function') {
             return {
                 func: func,
-                isFile: false,
                 required: argList(func)
             };
         }
@@ -179,7 +216,6 @@ exports.container = function () {
                 func: function () {
                     return func;
                 },
-                isFile: false,
                 required: []
             };
         }
@@ -328,12 +364,15 @@ exports.container = function () {
         get: get,
         resolve: resolve,
         register: register,
+        registerLibrary: registerLibrary,
         load: load,
         list: list,
         clearAll: clearAll
     };
 
-    registerContainer();
+    if (!('_container' in factories)) {
+        registerContainer();
+    }
 
     return container;
 };
