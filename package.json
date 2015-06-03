@@ -37,6 +37,10 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "mocha": "^2.2.5"
+    "chai": "^2.3.0",
+    "mocha": "^2.2.5",
+    "should": "^6.0.3",
+    "sinon": "^1.14.1",
+    "sinon-chai": "^2.7.0"
   }
 }
