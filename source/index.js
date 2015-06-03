@@ -376,7 +376,9 @@ exports.container = function () {
         clearAll: clearAll
     };
 
-    registerContainer();
+    if (!('_container' in factories)) {
+        registerContainer();
+    }
 
     return container;
 };
