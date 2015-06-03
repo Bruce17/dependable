@@ -31,8 +31,8 @@
     "url": "https://github.com/Bruce17/dependable"
   },
   "scripts": {
-    "test": "node_modules/.bin/mocha -R spec test/*.spec.js",
-    "test-watch": "node_modules/.bin/mocha -R nyan --watch test/*.spec.js"
+    "test": "node_modules/.bin/mocha -R spec ",
+    "test-watch": "node_modules/.bin/mocha -R nyan --watch"
   },
   "license": "MIT",
   "dependencies": {},
