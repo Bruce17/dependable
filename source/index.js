@@ -44,7 +44,6 @@ exports.container = function () {
 
             for (key in hash) {
                 if (hash.hasOwnProperty(key)) {
-                    results.push(registerOne(key, hash[key]))
                     results.push(registerOne(key, hash[key]));
                 }
             }
@@ -106,11 +105,10 @@ exports.container = function () {
      *
      * @param {string}   name
      * @param {function} func
-     * @param {boolean}  isFile Add a note to load this dependency lazy on request, because it is a module in a file.
      *
      * @returns {function}
      */
-    var registerOne = function (name, func, isFile) {
+    var registerOne = function (name, func) {
         if (!func) {
             throw new Error('Cannot register empty function!');
         }
@@ -216,7 +214,6 @@ exports.container = function () {
         if (typeof func === 'function') {
             return {
                 func: func,
-                isFile: false,
                 required: argList(func)
             };
         }
@@ -225,7 +222,6 @@ exports.container = function () {
                 func: function () {
                     return func;
                 },
-                isFile: false,
                 required: []
             };
         }
