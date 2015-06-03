@@ -1,6 +1,6 @@
 {
   "name": "@bruce17/dependable",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "main": "source/index.js",
   "engines": {
     "node": ">=0.10.0",
