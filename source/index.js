@@ -69,8 +69,6 @@ exports.container = function () {
      */
     var registerLibrary = function (name, func) {
         if (name === Object(name)) {
-            DEBUG && console.log('\t> register library hash');
-
             var hash = name;
             var results = [];
 
@@ -78,8 +76,6 @@ exports.container = function () {
 
             for (key in hash) {
                 if (hash.hasOwnProperty(key)) {
-                    DEBUG && console.log('\t\t> register: ', key);
-
                     /* jshint -W083 */
                     results.push(registerOne(key, (function (library) {
                         return function () {
@@ -92,8 +88,6 @@ exports.container = function () {
             return results;
         }
         else {
-            DEBUG && console.log('\t> register library one:', name);
-
             return registerOne(name, function () {
                 return func;
             });
