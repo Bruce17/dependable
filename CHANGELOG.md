@@ -1,3 +1,8 @@
+# 1.2.0
+
+- Added new method "registerLibrary" to register external node modules e.g. "lodash".
+- Minor bugfixes
+
 # 1.1.1
 
 - Do not clear container every time a new container is created.
