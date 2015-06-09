@@ -1,7 +1,9 @@
 [![npm package](https://img.shields.io/npm/v/@bruce17/dependable.svg?style=flat-square)](https://www.npmjs.org/package/@bruce17/dependable)
+[![tag:?](https://img.shields.io/github/tag/Bruce17/dependable.svg?style=flat-square)](https://github.com/Bruce17/dependable/releases)
 [![Dependency Status](https://david-dm.org/Bruce17/dependable.svg?style=flat-square)](https://david-dm.org/Bruce17/dependable)
 [![devDependency Status](https://david-dm.org/Bruce17/dependable/dev-status.svg?style=flat-square)](https://david-dm.org/Bruce17/dependable#info=devDependencies)
 [![code climate](https://img.shields.io/codeclimate/github/Bruce17/dependable.svg?style=flat-square)](https://codeclimate.com/github/Bruce17/dependable)
+[![coverage:?](https://img.shields.io/coveralls/Bruce17/dependable/master.svg?style=flat-square)](https://coveralls.io/r/Bruce17/dependable)
 [![Travis CI](https://travis-ci.org/Bruce17/dependable.svg?style=flat-square)](https://travis-ci.org/Bruce17/dependable)
 
 Dependable
