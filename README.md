@@ -16,8 +16,8 @@ A minimalist dependency injection framework for node.js.
 Create a new container by calling `dependable.container`:
 
 ```js
-var dependable = require('dependable'),
-    container = dependable.container();
+var dependable = require('@bruce17/dependable');
+var container = dependable.container();
 ```
 
 ### Register some dependencies
@@ -29,6 +29,29 @@ container.register('occupation', 'tax attorney');
 container.register('transport', {
   type: 'station wagon',
   material: 'wood-paneled'
+});
+container.register({
+  'foo': 'bar',
+  'obj': {
+    'str': 'test',
+    'num': 123
+  }
+});
+```
+
+### Register some library dependencies
+
+Register a few library dependencies e.g. `lodash` for later use:
+
+```js
+var lodash = require('lodash');
+var promise = require('promise');
+var express = require('express');
+
+container.registerLibrary('lodash', lodash);
+container.registerLibrary({
+  'promise': promise,
+  'express': express
 });
 ```
 
@@ -143,21 +166,20 @@ Sounds like a hit!
 
 ## API
 
-`container.register(name, function)` - Registers a dependency by name. `function` can be a function that takes dependencies and returns anything, or an object itself with no dependencies.
-
-`container.register(hash)` - Registers a hash of names and dependencies. This is useful for setting configuration constants.
-
-`container.load(fileOrFolder)` - Registers a file, using its file name as the name, or all files in a folder. Does not traverse subdirectories.
-
-`container.get(name, overrides = {})` - Returns a dependency by name, with all dependencies injected. If you specify overrides, the dependency will be given those overrides instead of those registered.
-
-`container.resolve(overrides={}, cb)` - Calls `cb` like a dependency function, injecting any dependencies found in the signature. Like `container.get`, this supports overrides.
-
-`container.list()` - Return a list of registered dependencies.
+* `container.register(name, function)` - Registers a dependency by name. `function` can be a function that takes dependencies and returns anything, or an object itself with no dependencies.
+* `container.register(hash)` - Registers a hash of names and dependencies. This is useful for setting configuration constants.
+* `container.registerLibrary(name, function)` - Registers a library dependency by name. `function` should be a library loaded via require and has the module pattern style.
+* `container.registerLibrary(hash)` - Registers a hash of names and library dependencies.
+* `container.load(fileOrFolder)` - Registers a file, using its file name as the name, or all files in a folder. Does not traverse subdirectories.
+* `container.get(name, overrides = {})` - Returns a dependency by name, with all dependencies injected. If you specify overrides, the dependency will be given those overrides instead of those registered.
+* `container.resolve(overrides={}, cb)` - Calls `cb` like a dependency function, injecting any dependencies found in the signature. Like `container.get`, this supports overrides.
+* `container.list()` - Return a list of registered dependencies.
+* `container.clearAll()` - Helper method to clear all registered dependencies e.g. for easy unit testing.
 
 ## Development
 
 Tests are written with mocha. To run the tests, run `npm test`.
+You can also run tests with a watcher: `npm run-script test-watch`.
 
 ## Notice
 
