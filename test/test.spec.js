@@ -591,6 +591,48 @@ describe('inject', function () {
      *
      * @todo: convert old tests into new format
      */
+    describe('register()', function () {
+        var depA, depB;
+
+        beforeEach(function () {
+            depA = 'foo bar';
+            depB = {
+                foo: 'bar',
+                obj: {
+                    str: 'test',
+                    num: 123,
+                    ary: [1, 2, 3]
+                }
+            };
+        });
+
+        it('should exist', function () {
+            expect(container.register).to.be.ok;
+            expect(container.register).to.be.a('function');
+        });
+
+        it('should register a dependency', function () {
+            container.register('depA', depA);
+            container.register('depB', depB);
+
+            expect(container.get('depA')).to.equal(depA);
+            expect(container.get('depA')).to.not.equal(depB);
+            expect(container.get('depB')).to.equal(depB);
+            expect(container.get('depB')).to.not.equal(depA);
+        });
+
+        it('should register a dependency via hash', function () {
+            container.register({
+                depA: depA,
+                depB: depB
+            });
+
+            expect(container.get('depA')).to.equal(depA);
+            expect(container.get('depA')).to.not.equal(depB);
+            expect(container.get('depB')).to.equal(depB);
+            expect(container.get('depB')).to.not.equal(depA);
+        });
+    });
 
     describe('registerLibrary()', function () {
         var libA, libB;
