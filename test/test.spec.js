@@ -781,7 +781,7 @@ describe('inject', function () {
 
     describe('register()', function () {
         describe('check regex to receive dependencies', function () {
-            it('should read dependencies from a multi line function', function () {
+            it('should read dependencies from a multi line function', function (done) {
                 var afile = path.join(os.tmpDir(), 'AAAAA.js');
                 var acode = 'module.exports = function() {\nreturn "a";\n}\n';
                 testFiles.push(afile);
