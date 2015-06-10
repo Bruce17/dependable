@@ -6,7 +6,7 @@
 
 var path = require('path');
 var fs = require('fs');
-var util = require('util');
+var Utils = require('./utils');
 
 var existsSync = (fs.existsSync ? fs.existsSync : path.existsSync);
 
@@ -153,7 +153,7 @@ exports.container = function () {
      * @returns {function}
      */
     var loadFile = function (file, options) {
-        options = (util.isObject(options) ? options : {});
+        options = (Utils.isObject(options) ? options : {});
 
         var module = file.replace(regex.fileEnding, '');
 
@@ -163,7 +163,7 @@ exports.container = function () {
         });
 
         // Add a prefix to the dependency's name
-        if ('prefix' in options && util.isString(options.prefix)) {
+        if ('prefix' in options && Utils.isString(options.prefix)) {
             name = options.prefix + name;
         }
 
