@@ -439,100 +439,6 @@ describe('inject', function () {
         });
     });
 
-    describe('file helpers', function () {
-        it('should let you register a file', function (done) {
-            var afile = path.join(os.tmpDir(), 'A.js');
-            var acode = 'module.exports = function() { return "a" }';
-            testFiles.push(afile);
-
-            var bfile = path.join(os.tmpDir(), 'B.js');
-            var bcode = 'module.exports = function(A) { return A + "b" }';
-            testFiles.push(bfile);
-
-            fs.writeFile(afile, acode, function (err) {
-                assert.ifError(err);
-
-                container.load(afile);
-
-                var a = container.get('A');
-                assert.equal(a, 'a');
-
-                fs.writeFile(bfile, bcode, function (err) {
-                    assert.ifError(err);
-
-                    container.load(bfile);
-                    var b = container.get('B');
-                    assert.equal(b, 'ab');
-
-                    done();
-                });
-            });
-        });
-
-        it('should let you register a whole directory', function (done) {
-            var dir = path.join(os.tmpDir(), 'testinject');
-
-            var afile = path.join(dir, 'A.js');
-            var acode = 'module.exports = function() { return "a" }';
-            testFiles.push(afile);
-
-            var bfile = path.join(dir, 'B.js');
-            var bcode = 'module.exports = function(A) { return A + "b" }';
-            testFiles.push(bfile);
-
-            fs.mkdir(dir, function (err) {
-                fs.writeFile(afile, acode, function (err) {
-                    assert.ifError(err);
-
-                    fs.writeFile(bfile, bcode, function (err) {
-                        assert.ifError(err);
-
-                        container.load(dir);
-
-                        var b = container.get('B');
-                        assert.equal(b, 'ab');
-
-                        done();
-                    });
-                });
-            });
-        });
-
-        it('should let you load a file without an extension');
-
-        it('should load a folder with a file with parse errors without accidentally trying to load the folder as a file');
-
-        it('should not crash if trying to load something as a file without an extension (crashed on fs.stat)');
-
-        // NOTICE: this test does not work. We need to load every module to read the module's dependencies!
-        xit('should be lazy', function (done) {
-            var dir = path.join(os.tmpDir(), 'testinject');
-
-            var cfile = path.join(dir, 'C.js');
-            var ccode = 'throw new Error("Should not be loaded because we do not require it");';
-            testFiles.push(cfile);
-
-            var dfile = path.join(dir, 'D.js');
-            var dcode = 'module.exports = function() { return "d"; };';
-            testFiles.push(dfile);
-
-            fs.mkdir(dir, function (err) {
-                fs.writeFile(cfile, ccode, function (err) {
-                    assert.ifError(err);
-
-                    fs.writeFile(dfile, dcode, function (err) {
-                        assert.ifError(err);
-
-                        container.load(dir);
-
-                        assert.equal('d', container.get('D'));
-                        done();
-                    });
-                });
-            });
-        });
-    });
-
     describe('simple dependencies', function () {
         it('doesnt have to be a function. objects work too', function () {
             container.register('a', 'a');
@@ -591,6 +497,48 @@ describe('inject', function () {
      *
      * @todo: convert old tests into new format
      */
+    describe('register()', function () {
+        var depA, depB;
+
+        beforeEach(function () {
+            depA = 'foo bar';
+            depB = {
+                foo: 'bar',
+                obj: {
+                    str: 'test',
+                    num: 123,
+                    ary: [1, 2, 3]
+                }
+            };
+        });
+
+        it('should exist', function () {
+            expect(container.register).to.be.ok;
+            expect(container.register).to.be.a('function');
+        });
+
+        it('should register a dependency', function () {
+            container.register('depA', depA);
+            container.register('depB', depB);
+
+            expect(container.get('depA')).to.equal(depA);
+            expect(container.get('depA')).to.not.equal(depB);
+            expect(container.get('depB')).to.equal(depB);
+            expect(container.get('depB')).to.not.equal(depA);
+        });
+
+        it('should register a dependency via hash', function () {
+            container.register({
+                depA: depA,
+                depB: depB
+            });
+
+            expect(container.get('depA')).to.equal(depA);
+            expect(container.get('depA')).to.not.equal(depB);
+            expect(container.get('depB')).to.equal(depB);
+            expect(container.get('depB')).to.not.equal(depA);
+        });
+    });
 
     describe('registerLibrary()', function () {
         var libA, libB;
@@ -664,6 +612,203 @@ describe('inject', function () {
             expect(container.get('depA')).to.equal('a');
             expect(container.get('depB')).to.not.equal(depB);
             expect(container.get('depB')).to.equal('ab');
+        });
+    });
+
+    describe('load()', function () {
+        describe('use method without options', function () {
+            it('should let you register a file', function (done) {
+                var afile = path.join(os.tmpDir(), 'A.js');
+                var acode = 'module.exports = function() { return "a" }';
+                testFiles.push(afile);
+
+                var bfile = path.join(os.tmpDir(), 'B.js');
+                var bcode = 'module.exports = function(A) { return A + "b" }';
+                testFiles.push(bfile);
+
+                fs.writeFile(afile, acode, function (err) {
+                    assert.ifError(err);
+
+                    container.load(afile);
+
+                    var a = container.get('A');
+                    assert.equal(a, 'a');
+
+                    fs.writeFile(bfile, bcode, function (err) {
+                        assert.ifError(err);
+
+                        container.load(bfile);
+                        var b = container.get('B');
+                        assert.equal(b, 'ab');
+
+                        done();
+                    });
+                });
+            });
+
+            it('should let you register a whole directory', function (done) {
+                var dir = path.join(os.tmpDir(), 'testinject');
+
+                var afile = path.join(dir, 'A.js');
+                var acode = 'module.exports = function() { return "a" }';
+                testFiles.push(afile);
+
+                var bfile = path.join(dir, 'B.js');
+                var bcode = 'module.exports = function(A) { return A + "b" }';
+                testFiles.push(bfile);
+
+                fs.mkdir(dir, function (err) {
+                    fs.writeFile(afile, acode, function (err) {
+                        assert.ifError(err);
+
+                        fs.writeFile(bfile, bcode, function (err) {
+                            assert.ifError(err);
+
+                            container.load(dir);
+
+                            var b = container.get('B');
+                            assert.equal(b, 'ab');
+
+                            done();
+                        });
+                    });
+                });
+            });
+
+            it('should let you load a file without an extension');
+
+            it('should load a folder with a file with parse errors without accidentally trying to load the folder as a file');
+
+            it('should not crash if trying to load something as a file without an extension (crashed on fs.stat)');
+
+            // NOTICE: this test does not work. We need to load every module to read the module's dependencies!
+            xit('should be lazy', function (done) {
+                var dir = path.join(os.tmpDir(), 'testinject');
+
+                var cfile = path.join(dir, 'C.js');
+                var ccode = 'throw new Error("Should not be loaded because we do not require it");';
+                testFiles.push(cfile);
+
+                var dfile = path.join(dir, 'D.js');
+                var dcode = 'module.exports = function() { return "d"; };';
+                testFiles.push(dfile);
+
+                fs.mkdir(dir, function (err) {
+                    fs.writeFile(cfile, ccode, function (err) {
+                        assert.ifError(err);
+
+                        fs.writeFile(dfile, dcode, function (err) {
+                            assert.ifError(err);
+
+                            container.load(dir);
+
+                            assert.equal('d', container.get('D'));
+                            done();
+                        });
+                    });
+                });
+            });
+        });
+
+        describe('test prefix option', function () {
+            var options;
+
+            beforeEach(function () {
+                options = {
+                    prefix: 'Test_'
+                };
+            });
+
+            it('should let you register a file', function (done) {
+                var afile = path.join(os.tmpDir(), 'AA.js');
+                var acode = 'module.exports = function() { return "a" }';
+                testFiles.push(afile);
+
+                var bfile = path.join(os.tmpDir(), 'BB.js');
+                var bcode = 'module.exports = function(Test_AA) { return Test_AA + "b" }';
+                testFiles.push(bfile);
+
+                fs.writeFile(afile, acode, function (err) {
+                    assert.ifError(err);
+
+                    container.load(afile, options);
+
+                    var a = container.get('Test_AA');
+                    assert.equal(a, 'a');
+
+                    fs.writeFile(bfile, bcode, function (err) {
+                        assert.ifError(err);
+
+                        container.load(bfile, options);
+                        var b = container.get('Test_BB');
+                        assert.equal(b, 'ab');
+
+                        done();
+                    });
+                });
+            });
+
+            it('should let you register a whole directory', function (done) {
+                var dir = path.join(os.tmpDir(), 'testinject');
+
+                var afile = path.join(dir, 'AAA.js');
+                var acode = 'module.exports = function() { return "a" }';
+                testFiles.push(afile);
+
+                var bfile = path.join(dir, 'BBB.js');
+                var bcode = 'module.exports = function(Test_AAA) { return Test_AAA + "b" }';
+                testFiles.push(bfile);
+
+                fs.mkdir(dir, function (err) {
+                    fs.writeFile(afile, acode, function (err) {
+                        assert.ifError(err);
+
+                        fs.writeFile(bfile, bcode, function (err) {
+                            assert.ifError(err);
+
+                            container.load(dir, options);
+
+                            var b = container.get('Test_BBB');
+                            assert.equal(b, 'ab');
+
+                            done();
+                        });
+                    });
+                });
+            });
+        });
+    });
+
+    describe('register()', function () {
+        describe('check regex to receive dependencies', function () {
+            it('should read dependencies from a multi line function', function () {
+                var afile = path.join(os.tmpDir(), 'AAAAA.js');
+                var acode = 'module.exports = function() {\nreturn "a";\n}\n';
+                testFiles.push(afile);
+
+                var bfile = path.join(os.tmpDir(), 'BBBBB.js');
+                var bcode = 'module.exports = function(\nAAAAA\n) {\nreturn AAAAA + "b";\n}\n';
+                testFiles.push(bfile);
+
+                fs.writeFile(afile, acode, function (err) {
+                    assert.ifError(err);
+
+                    container.load(afile);
+
+                    var a = container.get('AAAAA');
+                    assert.equal(a, 'a');
+
+                    fs.writeFile(bfile, bcode, function (err) {
+                        assert.ifError(err);
+
+                        container.load(bfile);
+                        var b = container.get('BBBBB');
+                        assert.equal(b, 'ab');
+
+                        done();
+                    });
+                });
+            });
         });
     });
 });
