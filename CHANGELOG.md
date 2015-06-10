@@ -1,3 +1,10 @@
+# 1.2.1
+
+- Extended unit tests.
+- Updated readme.
+- Updated dev dependencies.
+- Added prefix to dependencies loaded via `load()`.
+
 # 1.2.0
 
 - Added new method "registerLibrary" to register external node modules e.g. "lodash".
