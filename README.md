@@ -166,6 +166,44 @@ container.resolve({ transport: horse }, function (song) {
 
 Sounds like a hit!
 
+### Load all dependencies in a folder
+
+You can load a single file into the container:
+
+```js
+container.load('Foo.js')
+
+var foo = container.get('Foo');
+```
+
+Loading multiple files in a folder is also possible:
+
+```js
+// contains e.g. 'Foo.js', 'Bar.js'
+container.load('dummy-dir/');
+
+var foo = container.get('Foo');
+var bar = container.get('Bar');
+```
+
+If necessary you can also add a prefix (namespace) to each dependency to avoid conflicts with other dependencies:
+
+```js
+// contains e.g. 'Foo.js', 'Bar.js'
+container.load(
+  'dummy-dir/',
+  {
+    prefix: 'Test_'
+  }
+);
+
+var foo = container.get('Test_Foo');
+var bar = container.get('Test_Bar');
+```
+
+**Notice**: Be careful with references to dependencies with prefixes. You must always add the prefix to your dependency.
+
+
 ## API
 
 * `container.register(name, function)` - Registers a dependency by name. `function` can be a function that takes dependencies and returns anything, or an object itself with no dependencies.

@@ -6,6 +6,7 @@
 
 var path = require('path');
 var fs = require('fs');
+var util = require('util');
 
 var existsSync = (fs.existsSync ? fs.existsSync : path.existsSync);
 
@@ -24,6 +25,7 @@ exports.container = function () {
         fileEnding: /\.\w+$/,
         dashes: /\-(\w)/g,
         scriptFiles: /\.(js|coffee)$/,
+        //TODO: check if this regex works with whitespaces, new lines and comments!
         strFunc: /function.*?\(([\s\S]*?)\)/
     };
 
@@ -125,37 +127,46 @@ exports.container = function () {
      * The filename will be the identifier.
      *
      * @param {string} fileOrDir A file path or a path.
+     * @param {object} options   Pass optional options to this method.
      *
      * @returns {Array|function} A list of register files or just one register file function.
      */
-    var load = function (fileOrDir) {
+    var load = function (fileOrDir, options) {
         // Load a directory
         if (existsSync(fileOrDir)) {
             var stats = fs.statSync(fileOrDir);
 
             if (stats.isDirectory()) {
-                return loadDir(fileOrDir);
+                return loadDir(fileOrDir, options);
             }
         }
 
         // Load a file
-        return loadFile(fileOrDir);
+        return loadFile(fileOrDir, options);
     };
 
     /**
      * Load a file into the di-container.
      *
      * @param {string} file
+     * @param {object} options Pass optional options to this method.
      *
      * @returns {function}
      */
-    var loadFile = function (file) {
+    var loadFile = function (file, options) {
+        options = (util.isObject(options) ? options : {});
+
         var module = file.replace(regex.fileEnding, '');
 
         // Remove dashes from files and camelcase results
         var name = path.basename(module).replace(regex.dashes, function (match, letter) {
             return letter.toUpperCase();
         });
+
+        // Add a prefix to the dependency's name
+        if ('prefix' in options && util.isString(options.prefix)) {
+            name = options.prefix + name;
+        }
 
         return register(name, require(module));
     };
@@ -164,10 +175,11 @@ exports.container = function () {
      * Load files in a directory to the di-container.
      *
      * @param {string} dir
+     * @param {object} options Pass optional options to this method.
      *
      * @returns {Array}
      */
-    var loadDir = function (dir) {
+    var loadDir = function (dir, options) {
         var fileNames = fs.readdirSync(dir);
         var files = fileNames.map(function(file) {
             return path.join(dir, file);
@@ -186,7 +198,7 @@ exports.container = function () {
 
             stats = fs.statSync(file);
             if (stats.isFile()) {
-                results.push(loadFile(file));
+                results.push(loadFile(file, options));
             }
             //TODO: erm ... useless!?
             //else {
