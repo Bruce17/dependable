@@ -25,7 +25,6 @@ exports.container = function () {
         fileEnding: /\.\w+$/,
         dashes: /\-(\w)/g,
         scriptFiles: /\.(js|coffee)$/,
-        //TODO: check if this regex works with whitespaces, new lines and comments!
         strFunc: /function.*?\(([\s\S]*?)\)/
     };
 

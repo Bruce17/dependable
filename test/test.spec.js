@@ -778,4 +778,37 @@ describe('inject', function () {
             });
         });
     });
+
+    describe('register()', function () {
+        describe('check regex to receive dependencies', function () {
+            it('should read dependencies from a multi line function', function () {
+                var afile = path.join(os.tmpDir(), 'AAAAA.js');
+                var acode = 'module.exports = function() {\nreturn "a";\n}\n';
+                testFiles.push(afile);
+
+                var bfile = path.join(os.tmpDir(), 'BBBBB.js');
+                var bcode = 'module.exports = function(\nAAAAA\n) {\nreturn AAAAA + "b";\n}\n';
+                testFiles.push(bfile);
+
+                fs.writeFile(afile, acode, function (err) {
+                    assert.ifError(err);
+
+                    container.load(afile);
+
+                    var a = container.get('AAAAA');
+                    assert.equal(a, 'a');
+
+                    fs.writeFile(bfile, bcode, function (err) {
+                        assert.ifError(err);
+
+                        container.load(bfile);
+                        var b = container.get('BBBBB');
+                        assert.equal(b, 'ab');
+
+                        done();
+                    });
+                });
+            });
+        });
+    });
 });
