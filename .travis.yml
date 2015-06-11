@@ -1,5 +1,15 @@
+# define the language of this project
 language: node_js
+
+# define node.js versions to run on
 node_js:
   - "0.12"
   - "0.10"
   - "iojs"
+
+# run tests
+script: npm run-script test-travis
+
+# trigger some additional tools after success
+after_success:
+  - coveralls
