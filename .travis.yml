@@ -8,7 +8,7 @@ node_js:
   - "iojs"
 
 # run before everey other script
-before_script
+before_script:
   - npm install
 
 # run some scripts
