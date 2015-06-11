@@ -1,3 +1,7 @@
+# 1.2.3
+
+- Added new feature to also load subdirectories by calling `load(file, Array.<Sub-Dirs>)`.
+
 # 1.2.2
 
 - Fixed: added custom util methods which don't exist in Node.js v0.8.0 and v0.10.0
