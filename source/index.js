@@ -35,7 +35,7 @@ exports.container = function () {
      * @returns {Array|function}
      */
     var register = function (name, func) {
-        if (name === Object(name)) {
+        if (Utils.isObject(name)) {
             var hash = name;
             var results = [];
 
@@ -67,7 +67,7 @@ exports.container = function () {
      * @returns {Array|function}
      */
     var registerLibrary = function (name, func) {
-        if (name === Object(name)) {
+        if (Utils.isObject(name)) {
             var hash = name;
             var results = [];
 
@@ -102,10 +102,6 @@ exports.container = function () {
      * @returns {function}
      */
     var registerOne = function (name, func) {
-        if (!func) {
-            throw new Error('Cannot register empty function!');
-        }
-
         factories[name] = toFactory(func);
         return factories[name];
     };
