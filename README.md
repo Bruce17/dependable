@@ -211,6 +211,8 @@ var bar = container.get('Test_Bar');
 * `container.registerLibrary(name, function)` - Registers a library dependency by name. `function` should be a library loaded via require and has the module pattern style.
 * `container.registerLibrary(hash)` - Registers a hash of names and library dependencies.
 * `container.load(fileOrFolder)` - Registers a file, using its file name as the name, or all files in a folder. Does not traverse subdirectories.
+* `container.load(folder, subdirectory)` - Registers all files in a folder and optional sub folders. Does traverse only defined subdirectories.
+* `container.load(folder, options)`, `container.load(folder, subdirectory, options)` - Registers a file, using its file name as the name, or all files in a folder. Pass optional options to it to add an `prefix` to every loaded dependency e.g. `{prefix: 'Models_'}` will add `Models_` to every dependency registered in this container.
 * `container.get(name, overrides = {})` - Returns a dependency by name, with all dependencies injected. If you specify overrides, the dependency will be given those overrides instead of those registered.
 * `container.resolve(overrides={}, cb)` - Calls `cb` like a dependency function, injecting any dependencies found in the signature. Like `container.get`, this supports overrides.
 * `container.list()` - Return a list of registered dependencies.

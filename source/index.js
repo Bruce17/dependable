@@ -8,8 +8,6 @@ var path = require('path');
 var fs = require('fs');
 var Utils = require('./utils');
 
-var existsSync = (fs.existsSync ? fs.existsSync : path.existsSync);
-
 // Define all dependencies outside the container function to keep them
 var factories = {};
 var modules = {};
@@ -126,18 +124,42 @@ exports.container = function () {
      * The filename will be the identifier.
      *
      * @param {string} fileOrDir A file path or a path.
+     * @param {Array}  subDirs   Also load content from subdirectories depending on "fileOrDir" as base path.
      * @param {object} options   Pass optional options to this method.
      *
      * @returns {Array|function} A list of register files or just one register file function.
      */
-    var load = function (fileOrDir, options) {
-        // Load a directory
-        if (existsSync(fileOrDir)) {
-            var stats = fs.statSync(fileOrDir);
-
-            if (stats.isDirectory()) {
-                return loadDir(fileOrDir, options);
+    var load = function (fileOrDir, subDirs, options) {
+        // Maybe the user only passed two arguments an "path" + "options". Adjust the arguments in that case.
+        if (options === undefined) {
+            if (Utils.isObject(subDirs)) {
+                options = subDirs;
             }
+        }
+
+        // Load a directory
+        if (fs.statSync(fileOrDir).isDirectory()) {
+            var results = loadDir(fileOrDir, options);
+
+            // Load a subdirectory
+            if (Utils.isArray(subDirs)) {
+                var i, iLen;
+                var subDir;
+
+                // Iterate over each sub directory ...
+                for (i = 0, iLen = subDirs.length; i < iLen; i++) {
+                    subDir = path.join(fileOrDir, subDirs[i]);
+
+                    // ... and load it via "loadDir"
+                    if (fs.statSync(subDir).isDirectory()) {
+                        results.concat(
+                            loadDir(subDir, options)
+                        );
+                    }
+                }
+            }
+
+            return results;
         }
 
         // Load a file

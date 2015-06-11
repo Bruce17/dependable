@@ -618,12 +618,12 @@ describe('inject', function () {
     describe('load()', function () {
         describe('use method without options', function () {
             it('should let you register a file', function (done) {
-                var afile = path.join(os.tmpDir(), 'A.js');
+                var afile = path.join(os.tmpDir(), 'A1.js');
                 var acode = 'module.exports = function() { return "a" }';
                 testFiles.push(afile);
 
-                var bfile = path.join(os.tmpDir(), 'B.js');
-                var bcode = 'module.exports = function(A) { return A + "b" }';
+                var bfile = path.join(os.tmpDir(), 'B1.js');
+                var bcode = 'module.exports = function(A1) { return A1 + "b" }';
                 testFiles.push(bfile);
 
                 fs.writeFile(afile, acode, function (err) {
@@ -631,14 +631,14 @@ describe('inject', function () {
 
                     container.load(afile);
 
-                    var a = container.get('A');
+                    var a = container.get('A1');
                     assert.equal(a, 'a');
 
                     fs.writeFile(bfile, bcode, function (err) {
                         assert.ifError(err);
 
                         container.load(bfile);
-                        var b = container.get('B');
+                        var b = container.get('B1');
                         assert.equal(b, 'ab');
 
                         done();
@@ -649,12 +649,12 @@ describe('inject', function () {
             it('should let you register a whole directory', function (done) {
                 var dir = path.join(os.tmpDir(), 'testinject');
 
-                var afile = path.join(dir, 'A.js');
+                var afile = path.join(dir, 'A2.js');
                 var acode = 'module.exports = function() { return "a" }';
                 testFiles.push(afile);
 
-                var bfile = path.join(dir, 'B.js');
-                var bcode = 'module.exports = function(A) { return A + "b" }';
+                var bfile = path.join(dir, 'B2.js');
+                var bcode = 'module.exports = function(A2) { return A2 + "b" }';
                 testFiles.push(bfile);
 
                 fs.mkdir(dir, function (err) {
@@ -666,7 +666,7 @@ describe('inject', function () {
 
                             container.load(dir);
 
-                            var b = container.get('B');
+                            var b = container.get('B2');
                             assert.equal(b, 'ab');
 
                             done();
@@ -720,12 +720,12 @@ describe('inject', function () {
             });
 
             it('should let you register a file', function (done) {
-                var afile = path.join(os.tmpDir(), 'AA.js');
+                var afile = path.join(os.tmpDir(), 'A3.js');
                 var acode = 'module.exports = function() { return "a" }';
                 testFiles.push(afile);
 
-                var bfile = path.join(os.tmpDir(), 'BB.js');
-                var bcode = 'module.exports = function(Test_AA) { return Test_AA + "b" }';
+                var bfile = path.join(os.tmpDir(), 'B3.js');
+                var bcode = 'module.exports = function(Test_A3) { return Test_A3 + "b" }';
                 testFiles.push(bfile);
 
                 fs.writeFile(afile, acode, function (err) {
@@ -733,14 +733,14 @@ describe('inject', function () {
 
                     container.load(afile, options);
 
-                    var a = container.get('Test_AA');
+                    var a = container.get('Test_A3');
                     assert.equal(a, 'a');
 
                     fs.writeFile(bfile, bcode, function (err) {
                         assert.ifError(err);
 
                         container.load(bfile, options);
-                        var b = container.get('Test_BB');
+                        var b = container.get('Test_B3');
                         assert.equal(b, 'ab');
 
                         done();
@@ -751,12 +751,12 @@ describe('inject', function () {
             it('should let you register a whole directory', function (done) {
                 var dir = path.join(os.tmpDir(), 'testinject');
 
-                var afile = path.join(dir, 'AAA.js');
+                var afile = path.join(dir, 'A4.js');
                 var acode = 'module.exports = function() { return "a" }';
                 testFiles.push(afile);
 
-                var bfile = path.join(dir, 'BBB.js');
-                var bcode = 'module.exports = function(Test_AAA) { return Test_AAA + "b" }';
+                var bfile = path.join(dir, 'B4.js');
+                var bcode = 'module.exports = function(Test_A4) { return Test_A4 + "b" }';
                 testFiles.push(bfile);
 
                 fs.mkdir(dir, function (err) {
@@ -768,7 +768,156 @@ describe('inject', function () {
 
                             container.load(dir, options);
 
-                            var b = container.get('Test_BBB');
+                            var b = container.get('Test_B4');
+                            assert.equal(b, 'ab');
+
+                            done();
+                        });
+                    });
+                });
+            });
+        });
+
+        describe('test sub directory', function () {
+            var subDirs;
+
+            beforeEach(function () {
+                subDirs = [
+                    'foo/'
+                ];
+            });
+
+            it('should let you register a file', function (done) {
+                var baseDir = os.tmpDir() + '/';
+
+                var afile = path.join(baseDir, 'A5.js');
+                var acode = 'module.exports = function() { return "a" }';
+                testFiles.push(afile);
+
+                var bfile = path.join(baseDir + subDirs[0], 'B5.js');
+                var bcode = 'module.exports = function(A5) { return A5 + "b" }';
+                testFiles.push(bfile);
+
+                fs.mkdir(baseDir + subDirs[0], function (err) {
+                    fs.writeFile(afile, acode, function (err) {
+                        assert.ifError(err);
+
+                        container.load(afile);
+
+                        var a = container.get('A5');
+                        assert.equal(a, 'a');
+
+                        fs.writeFile(bfile, bcode, function (err) {
+                            assert.ifError(err);
+
+                            container.load(bfile);
+                            var b = container.get('B5');
+                            assert.equal(b, 'ab');
+
+                            done();
+                        });
+                    });
+                });
+            });
+
+            it('should let you register a whole directory', function (done) {
+                var dir = path.join(os.tmpDir(), 'testinject/');
+
+                var afile = path.join(dir, 'A6.js');
+                var acode = 'module.exports = function() { return "a" }';
+                testFiles.push(afile);
+
+                var bfile = path.join(dir + subDirs[0], 'B6.js');
+                var bcode = 'module.exports = function(A6) { return A6 + "b" }';
+                testFiles.push(bfile);
+
+                fs.mkdir(dir + subDirs[0], function (err) {
+                    fs.writeFile(afile, acode, function (err) {
+                        assert.ifError(err);
+
+                        fs.writeFile(bfile, bcode, function (err) {
+                            assert.ifError(err);
+
+                            container.load(dir, subDirs);
+
+                            var b = container.get('B6');
+                            assert.equal(b, 'ab');
+
+                            done();
+                        });
+                    });
+                });
+            });
+        });
+
+        describe('test sub directory and prefix option', function () {
+            var subDirs;
+            var options;
+
+            beforeEach(function () {
+                subDirs = [
+                    'foo/'
+                ];
+
+                options = {
+                    prefix: 'Test_'
+                };
+            });
+
+            it('should let you register a file', function (done) {
+                var baseDir = os.tmpDir() + '/';
+
+                var afile = path.join(baseDir, 'A7.js');
+                var acode = 'module.exports = function() { return "a" }';
+                testFiles.push(afile);
+
+                var bfile = path.join(baseDir + subDirs[0], 'B7.js');
+                var bcode = 'module.exports = function(Test_A7) { return Test_A7 + "b" }';
+                testFiles.push(bfile);
+
+                fs.mkdir(baseDir + subDirs[0], function (err) {
+                    fs.writeFile(afile, acode, function (err) {
+                        assert.ifError(err);
+
+                        container.load(afile, options);
+
+                        var a = container.get('Test_A7');
+                        assert.equal(a, 'a');
+
+                        fs.writeFile(bfile, bcode, function (err) {
+                            assert.ifError(err);
+
+                            container.load(bfile, options);
+                            var b = container.get('Test_B7');
+                            assert.equal(b, 'ab');
+
+                            done();
+                        });
+                    });
+                });
+            });
+
+            it('should let you register a whole directory', function (done) {
+                var dir = path.join(os.tmpDir(), 'testinject/');
+
+                var afile = path.join(dir, 'A8.js');
+                var acode = 'module.exports = function() { return "a" }';
+                testFiles.push(afile);
+
+                var bfile = path.join(dir + subDirs[0], 'B8.js');
+                var bcode = 'module.exports = function(Test_A8) { return Test_A8 + "b" }';
+                testFiles.push(bfile);
+
+                fs.mkdir(dir + subDirs[0], function (err) {
+                    fs.writeFile(afile, acode, function (err) {
+                        assert.ifError(err);
+
+                        fs.writeFile(bfile, bcode, function (err) {
+                            assert.ifError(err);
+
+                            container.load(dir, subDirs, options);
+
+                            var b = container.get('Test_B8');
                             assert.equal(b, 'ab');
 
                             done();
@@ -781,13 +930,13 @@ describe('inject', function () {
 
     describe('register()', function () {
         describe('check regex to receive dependencies', function () {
-            it('should read dependencies from a multi line function', function () {
-                var afile = path.join(os.tmpDir(), 'AAAAA.js');
+            it('should read dependencies from a multi line function', function (done) {
+                var afile = path.join(os.tmpDir(), 'AA1.js');
                 var acode = 'module.exports = function() {\nreturn "a";\n}\n';
                 testFiles.push(afile);
 
-                var bfile = path.join(os.tmpDir(), 'BBBBB.js');
-                var bcode = 'module.exports = function(\nAAAAA\n) {\nreturn AAAAA + "b";\n}\n';
+                var bfile = path.join(os.tmpDir(), 'BB1.js');
+                var bcode = 'module.exports = function(\nAA1\n) {\nreturn AA1 + "b";\n}\n';
                 testFiles.push(bfile);
 
                 fs.writeFile(afile, acode, function (err) {
@@ -795,14 +944,14 @@ describe('inject', function () {
 
                     container.load(afile);
 
-                    var a = container.get('AAAAA');
+                    var a = container.get('AA1');
                     assert.equal(a, 'a');
 
                     fs.writeFile(bfile, bcode, function (err) {
                         assert.ifError(err);
 
                         container.load(bfile);
-                        var b = container.get('BBBBB');
+                        var b = container.get('BB1');
                         assert.equal(b, 'ab');
 
                         done();
