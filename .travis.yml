@@ -14,11 +14,11 @@ before_script
 # run some scripts
 script:
   # run tests
-  - npm run-script test-coveralls
+  - npm run-script test-travis
 
 # trigger some additional tools after success
 after_success:
   # send coverage data to coveralls
-  - coveralls
+  - npm run-script coveralls
   # send coverage data to codeclimate
   - npm run-script codeclimate
