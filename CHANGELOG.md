@@ -1,3 +1,7 @@
+# 1.2.4
+
+- It's possible to register a dependency with an undefined/null function as result.
+
 # 1.2.3
 
 - Added new feature to also load subdirectories by calling `load(file, Array.<Sub-Dirs>)`.
