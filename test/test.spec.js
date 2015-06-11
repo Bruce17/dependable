@@ -959,14 +959,5 @@ describe('inject', function () {
                 });
             });
         });
-
-        it('should try to register an empty function to trigger an error', function () {
-            var fn = function () {
-                container.register('foo');
-            };
-
-            expect(fn).to.throw(Error);
-            expect(fn).to.throw('Cannot register empty function!');
-        });
     });
 });

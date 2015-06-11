@@ -102,10 +102,6 @@ exports.container = function () {
      * @returns {function}
      */
     var registerOne = function (name, func) {
-        if (!func) {
-            throw new Error('Cannot register empty function!');
-        }
-
         factories[name] = toFactory(func);
         return factories[name];
     };
