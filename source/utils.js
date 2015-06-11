@@ -4,6 +4,7 @@
  * @date   10.06.2015 15:03
  */
 
+'use strict';
 
 /**
  * Check if an element is of type <Array>
