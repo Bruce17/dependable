@@ -30,6 +30,9 @@
     "type": "git",
     "url": "https://github.com/Bruce17/dependable"
   },
+  "bugs": {
+    "url": "https://github.com/Bruce17/dependable/issues"
+  },
   "scripts": {
     "test": "node_modules/.bin/mocha -R spec ",
     "test-watch": "node_modules/.bin/mocha -R nyan --watch",
