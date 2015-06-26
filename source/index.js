@@ -110,6 +110,8 @@ exports.container = function () {
      * Return a list of all factories.
      *
      * @returns {object}
+     *
+     * @todo: add feature to filter a list e.g. return every dependency starting with "Model*" or ending with "*Controller"
      */
     var list = function () {
         return factories;
