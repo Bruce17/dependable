@@ -118,6 +118,28 @@ exports.container = function () {
     };
 
     /**
+     * Return a list all matching factories.
+     *
+     * @param {string} searchPattern A regular expression
+     */
+    var find = function (searchPattern) {
+        var result = {};
+        var key;
+        var blacklist = ['_container'];
+
+        if (!Utils.isUndefined(searchPattern) && Utils.isString(searchPattern) && searchPattern.length > 0){
+            for (key in factories){
+                if (factories.hasOwnProperty(key) && !Utils.inArray(blacklist, key) && key.match(searchPattern)){
+                    //result[key] = factories[key];
+                    result[key] = get(key);
+                }
+            }
+        }
+
+        return result;
+    };
+
+    /**
      * Load a directory of files or a file into the di-container.
      * The filename will be the identifier.
      *
@@ -398,6 +420,7 @@ exports.container = function () {
         registerLibrary: registerLibrary,
         load: load,
         list: list,
+        find: find,
         clearAll: clearAll
     };
 

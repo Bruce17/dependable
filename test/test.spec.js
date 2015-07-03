@@ -960,4 +960,127 @@ describe('inject', function () {
             });
         });
     });
+
+    describe('find()', function(){
+        var libA, libB, bibC, bibD;
+        var depA, depB, abhC, abhD;
+
+        before(function(){
+            libA = function () {
+                return 'foo bar';
+            };
+            libB = function () {
+                return {num: 123};
+            };
+            bibC = function () {
+                return {foo: 'bar'};
+            };
+            bibD = function () {
+                return 123;
+            };
+
+            depA = function () {
+                return 'a';
+            };
+            depB = function (depA) {
+                return depA + 'b';
+            };
+            abhC = function () {
+                return 'c';
+            };
+            abhD = function (abhC) {
+                return abhC + 'd';
+            };
+        });
+
+        beforeEach(function () {
+            container.register({
+                depA: depA,
+                depB: depB,
+                abhC: abhC,
+                abhD: abhD
+            });
+            container.registerLibrary({
+                libA: libA,
+                libB: libB,
+                bibC: bibC,
+                bibD: bibD
+            });
+        });
+
+        it('should exist', function () {
+            expect(container.find).to.be.ok;
+            expect(container.find).to.be.a('function');
+        });
+
+        it('should return an empty result for an empty search pattern ""', function(){
+            var dependencies = container.find('');
+            expect(dependencies).to.be.ok;
+            expect(dependencies).to.be.an.object;
+            expect(Object.keys(dependencies).length).to.be.equal(0);
+        });
+
+        it('should return all dependencies for search pattern ".*"', function(){
+            var dependencies = container.find('.*');
+            expect(dependencies).to.be.ok;
+            expect(dependencies).to.be.an.object;
+            expect(Object.keys(dependencies).length).to.be.equal(8);
+        });
+
+        it('should return all dependencies "dep*"', function(){
+            var dependencies = container.find('dep*');
+            expect(dependencies).to.be.ok;
+            expect(dependencies).to.be.an.object;
+            expect(Object.keys(dependencies).length).to.be.equal(2);
+            expect(dependencies).to.have.property('depA');
+            expect(dependencies).to.have.property('depB');
+        });
+
+        it('should return all dependencies "abh*"', function(){
+            var dependencies = container.find('abh*');
+            expect(dependencies).to.be.ok;
+            expect(dependencies).to.be.an.object;
+            expect(Object.keys(dependencies).length).to.be.equal(2);
+            expect(dependencies).to.have.property('abhC');
+            expect(dependencies).to.have.property('abhD');
+        });
+
+        it('should return all libraries "lib*"', function(){
+            var dependencies = container.find('lib*');
+            expect(dependencies).to.be.ok;
+            expect(dependencies).to.be.an.object;
+            expect(Object.keys(dependencies).length).to.be.equal(2);
+            expect(dependencies).to.have.property('libA');
+            expect(dependencies).to.have.property('libB');
+        });
+
+        it('should return all libraries "bib*"', function(){
+            var dependencies = container.find('bib.*');
+            expect(dependencies).to.be.ok;
+            expect(dependencies).to.be.an.object;
+            expect(Object.keys(dependencies).length).to.be.equal(2);
+            expect(dependencies).to.have.property('bibC');
+            expect(dependencies).to.have.property('bibD');
+        });
+
+        it('should return all dependencies ".*A"', function(){
+            var dependencies = container.find('.*A');
+            expect(dependencies).to.be.ok;
+            expect(dependencies).to.be.an.object;
+            expect(Object.keys(dependencies).length).to.be.equal(2);
+            expect(dependencies).to.have.property('depA');
+            expect(dependencies).to.have.property('libA');
+        });
+
+        it('should return a direct match "depA"', function(){
+            var dependencies = container.find('depA');
+            expect(dependencies).to.be.ok;
+            expect(dependencies).to.be.an.object;
+            expect(Object.keys(dependencies).length).to.be.equal(1);
+            expect(dependencies).to.have.property('depA');
+        });
+
+
+    });
+
 });
