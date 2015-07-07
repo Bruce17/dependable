@@ -9,6 +9,9 @@
 var regex = {
     escape: /[.*+?^${}()|[\]\/\\]/g
 };
+var regexInst = {
+    escape: new RegExp(regex.escape.source)
+};
 
 
 /**
@@ -110,7 +113,7 @@ exports.simpleCompare = function simpleCompare(a, b) {
 exports.escapeRegex = function escapeRegex(string) {
     string = (this.isString(string) ? string : '');
 
-    return (string && regex.escape.test(string)) ?
+    return (string && regexInst.escape.test(string)) ?
         string.replace(regex.escape, '\\$&') :
         string
     ;

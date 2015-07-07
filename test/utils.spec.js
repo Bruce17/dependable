@@ -285,5 +285,38 @@ describe('Utils', function () {
             expect(result).to.not.equal(str);
             expect(result).to.equal('\\^foo\\*\\[a-z\\]\\+\\(bar\\)\\?\\$');
         });
+
+        it('should escape "*abc"', function () {
+            var str = '*abc';
+
+            var result = Utils.escapeRegex(str);
+
+            expect(result).to.be.ok;
+            expect(result).to.be.an('string');
+            expect(result).to.not.equal(str);
+            expect(result).to.equal('\\*abc');
+        });
+
+        it('should escape "abc*"', function () {
+            var str = 'abc*';
+
+            var result = Utils.escapeRegex(str);
+
+            expect(result).to.be.ok;
+            expect(result).to.be.an('string');
+            expect(result).to.not.equal(str);
+            expect(result).to.equal('abc\\*');
+        });
+
+        it('should escape "*abc*"', function () {
+            var str = '*abc*';
+
+            var result = Utils.escapeRegex(str);
+
+            expect(result).to.be.ok;
+            expect(result).to.be.an('string');
+            expect(result).to.not.equal(str);
+            expect(result).to.equal('\\*abc\\*');
+        });
     });
 });
