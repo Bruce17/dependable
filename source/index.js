@@ -218,6 +218,10 @@ exports.container = function () {
         if ('prefix' in options && Utils.isString(options.prefix)) {
             name = options.prefix + name;
         }
+        // Add a postfix to the dependency's name
+        if ('postfix' in options && Utils.isString(options.postfix)) {
+            name = name + options.postfix;
+        }
 
         return register(name, require(module));
     };

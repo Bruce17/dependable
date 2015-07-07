@@ -1,6 +1,7 @@
 # HEAD
 
 - Implemented new method `find` to search for registered dependencies by a search string containing placeholder fields e.g. search for "foo*" to receive all dependencies starting with "foo".
+- Added new option `postfix` to add a postfix string to every loaded dependency.
 
 # 1.2.4
 
