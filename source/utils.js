@@ -44,6 +44,7 @@ exports.isString = function isString(str) {
  * Check if `value` is `undefined`.
  *
  * @param {*} value
+ *
  * @returns {boolean}
  */
 exports.isUndefined = function isUndefined(value) {
@@ -54,16 +55,16 @@ exports.isUndefined = function isUndefined(value) {
  * Check if an array contains an element.
  *
  * @param {array} haystack
- * @param {*} needle
+ * @param {*}     needle
+ *
  * @returns {boolean}
  */
 exports.inArray = function inArray(haystack, needle) {
     var result = false;
-    if (this.isArray(haystack)){
-        var count=haystack.length;
-        for(var i=0;i<count;i++)
-        {
-            if(this.simpleCompare(haystack[i], needle)){
+    if (this.isArray(haystack)) {
+        var count = haystack.length;
+        for (var i = 0; i < count; i++) {
+            if (this.simpleCompare(haystack[i], needle)) {
                 result = true;
             }
         }
@@ -77,15 +78,16 @@ exports.inArray = function inArray(haystack, needle) {
  *
  * @param {*} a
  * @param {*} b
+ *
  * @returns {boolean}
  */
-exports.simpleCompare = function simpleCompare(a, b){
+exports.simpleCompare = function simpleCompare(a, b) {
     var result = false;
-    if (this.isObject(a) && this.isObject(b)){
-        result = JSON.stringify(a) === JSON.stringify(b);
+    if (this.isObject(a) && this.isObject(b)) {
+        result = (JSON.stringify(a) === JSON.stringify(b));
     }
     else {
-        result = a === b;
+        result = (a === b);
     }
 
     return result;
