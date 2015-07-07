@@ -1015,72 +1015,85 @@ describe('inject', function () {
 
         it('should return an empty result for an empty search pattern ""', function(){
             var dependencies = container.find('');
+
             expect(dependencies).to.be.ok;
             expect(dependencies).to.be.an.object;
-            expect(Object.keys(dependencies).length).to.be.equal(0);
+            expect(Object.keys(dependencies)).to.have.length(0);
         });
 
-        it('should return all dependencies for search pattern ".*"', function(){
-            var dependencies = container.find('.*');
+        it('should return all dependencies for search pattern "*"', function(){
+            var dependencies = container.find('*');
+
             expect(dependencies).to.be.ok;
             expect(dependencies).to.be.an.object;
-            expect(Object.keys(dependencies).length).to.be.equal(8);
+            expect(Object.keys(dependencies)).to.have.length(8);
         });
 
         it('should return all dependencies "dep*"', function(){
             var dependencies = container.find('dep*');
+
             expect(dependencies).to.be.ok;
             expect(dependencies).to.be.an.object;
-            expect(Object.keys(dependencies).length).to.be.equal(2);
+            expect(Object.keys(dependencies)).to.have.length(2);
             expect(dependencies).to.have.property('depA');
             expect(dependencies).to.have.property('depB');
         });
 
         it('should return all dependencies "abh*"', function(){
             var dependencies = container.find('abh*');
+
             expect(dependencies).to.be.ok;
             expect(dependencies).to.be.an.object;
-            expect(Object.keys(dependencies).length).to.be.equal(2);
+            expect(Object.keys(dependencies)).to.have.length(2);
             expect(dependencies).to.have.property('abhC');
             expect(dependencies).to.have.property('abhD');
         });
 
         it('should return all libraries "lib*"', function(){
             var dependencies = container.find('lib*');
+
             expect(dependencies).to.be.ok;
             expect(dependencies).to.be.an.object;
-            expect(Object.keys(dependencies).length).to.be.equal(2);
+            expect(Object.keys(dependencies)).to.have.length(2);
             expect(dependencies).to.have.property('libA');
             expect(dependencies).to.have.property('libB');
         });
 
         it('should return all libraries "bib*"', function(){
-            var dependencies = container.find('bib.*');
+            var dependencies = container.find('bib*');
+
             expect(dependencies).to.be.ok;
             expect(dependencies).to.be.an.object;
-            expect(Object.keys(dependencies).length).to.be.equal(2);
+            expect(Object.keys(dependencies)).to.have.length(2);
             expect(dependencies).to.have.property('bibC');
             expect(dependencies).to.have.property('bibD');
         });
 
-        it('should return all dependencies ".*A"', function(){
-            var dependencies = container.find('.*A');
+        it('should return all dependencies "*A"', function(){
+            var dependencies = container.find('*A');
+
             expect(dependencies).to.be.ok;
             expect(dependencies).to.be.an.object;
-            expect(Object.keys(dependencies).length).to.be.equal(2);
+            expect(Object.keys(dependencies)).to.have.length(2);
             expect(dependencies).to.have.property('depA');
             expect(dependencies).to.have.property('libA');
         });
 
         it('should return a direct match "depA"', function(){
             var dependencies = container.find('depA');
+
             expect(dependencies).to.be.ok;
             expect(dependencies).to.be.an.object;
-            expect(Object.keys(dependencies).length).to.be.equal(1);
+            expect(Object.keys(dependencies)).to.have.length(1);
             expect(dependencies).to.have.property('depA');
         });
 
+        it('should not allow regex as argument"', function(){
+            var dependencies = container.find('bib.*');
 
+            expect(dependencies).to.be.ok;
+            expect(dependencies).to.be.an.object;
+            expect(Object.keys(dependencies)).to.have.length(0);
+        });
     });
-
 });
