@@ -216,6 +216,7 @@ var bar = container.get('Test_Bar');
 * `container.get(name, overrides = {})` - Returns a dependency by name, with all dependencies injected. If you specify overrides, the dependency will be given those overrides instead of those registered.
 * `container.resolve(overrides={}, cb)` - Calls `cb` like a dependency function, injecting any dependencies found in the signature. Like `container.get`, this supports overrides.
 * `container.list()` - Return a list of registered dependencies.
+* `container.find()` - Search for dependencies optionally with placeholders e.g. "foo*" to receive all dependencies starting with "foo".
 * `container.clearAll()` - Helper method to clear all registered dependencies e.g. for easy unit testing.
 
 ## Development

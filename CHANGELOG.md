@@ -1,3 +1,7 @@
+# HEAD
+
+- Implemented new method `find` to search for registered dependencies by a search string containing placeholder fields e.g. search for "foo*" to receive all dependencies starting with "foo".
+
 # 1.2.4
 
 - It's possible to register a dependency with an undefined/null function as result.
