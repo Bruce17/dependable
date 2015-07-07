@@ -6,6 +6,11 @@
 
 'use strict';
 
+var regex = {
+    escape: /[.*+?^${}()|[\]\/\\]/g
+};
+
+
 /**
  * Check if an element is of type <Array>
  *
@@ -91,4 +96,22 @@ exports.simpleCompare = function simpleCompare(a, b) {
     }
 
     return result;
+};
+
+/**
+ * Escape a string containing regex content.
+ *
+ * @param {String|RegExp} string
+ *
+ * @returns {string}
+ *
+ * @NOTICE: this method is borrowed from "lodash"
+ */
+exports.escapeRegex = function escapeRegex(string) {
+    string = (this.isString(string) ? string : '');
+
+    return (string && regex.escape.test(string)) ?
+        string.replace(regex.escape, '\\$&') :
+        string
+    ;
 };

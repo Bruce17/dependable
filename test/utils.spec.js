@@ -247,4 +247,43 @@ describe('Utils', function () {
             });
         });
     });
+
+    describe('escapeRegex()', function () {
+        it('should exist', function () {
+            expect(Utils.escapeRegex).to.be.ok;
+            expect(Utils.escapeRegex).to.be.a('function');
+        });
+
+        it('should not escape a normal string', function () {
+            var str = 'hello world!';
+
+            var result = Utils.escapeRegex(str);
+
+            expect(result).to.be.ok;
+            expect(result).to.be.an('string');
+            expect(result).to.equal(str);
+        });
+
+        it('should a string containing an asterisk', function () {
+            var str = 'hello *!';
+
+            var result = Utils.escapeRegex(str);
+
+            expect(result).to.be.ok;
+            expect(result).to.be.an('string');
+            expect(result).to.not.equal(str);
+            expect(result).to.equal('hello \\*!');
+        });
+
+        it('should escape a regex', function () {
+            var str = '^foo*[a-z]+(bar)?$';
+
+            var result = Utils.escapeRegex(str);
+
+            expect(result).to.be.ok;
+            expect(result).to.be.an('string');
+            expect(result).to.not.equal(str);
+            expect(result).to.equal('\\^foo\\*\\[a-z\\]\\+\\(bar\\)\\?\\$');
+        });
+    });
 });
