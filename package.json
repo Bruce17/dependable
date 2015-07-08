@@ -35,7 +35,7 @@
   },
   "scripts": {
     "test": "node_modules/.bin/mocha -R spec ",
-    "test-watch": "node_modules/.bin/mocha -R nyan --watch",
+    "test-watch": "node_modules/.bin/mocha -R progress --watch",
     "test-cov": "node --harmony node_modules/istanbul-harmony/lib/cli.js cover ./node_modules/mocha/bin/_mocha  -- -u exports",
     "test-travis": "node --harmony node_modules/istanbul-harmony/lib/cli.js cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -u exports",
     "coveralls": "./node_modules/.bin/coveralls < ./coverage/lcov.info",

@@ -26,6 +26,12 @@ exports.container = function () {
         strFunc: /function.*?\(([\s\S]*?)\)/
     };
 
+    // Define a list of factory names which should be blacklisted e.g. in method "find"
+    var factoryBlacklist = [
+        '_container'
+    ];
+
+
     /**
      * Register a dependency in the di-container.
      *
@@ -110,11 +116,37 @@ exports.container = function () {
      * Return a list of all factories.
      *
      * @returns {object}
-     *
-     * @todo: add feature to filter a list e.g. return every dependency starting with "Model*" or ending with "*Controller"
      */
     var list = function () {
         return factories;
+    };
+
+    /**
+     * Return a list all matching factories.
+     *
+     * @param {string} searchPattern An matching factory name including optional asterisk characters as placeholders.
+     */
+    var find = function (searchPattern) {
+        var result = {};
+        var key;
+
+        // Prepare a regex to select a specific set of the permissions.
+        var preparedRegex = new RegExp(
+            Utils.isString(searchPattern) && searchPattern.length > 0 ?
+                '^' + Utils.escapeRegex(searchPattern).replace('\\*', '.*') + '$' :
+                '',
+            'i'
+        );
+
+        if (preparedRegex.source !== '' && preparedRegex.source !== '(?:)') {
+            for (key in factories) {
+                if (factories.hasOwnProperty(key) && !Utils.inArray(factoryBlacklist, key) && preparedRegex.test(key)) {
+                    result[key] = get(key);
+                }
+            }
+        }
+
+        return result;
     };
 
     /**
@@ -402,6 +434,7 @@ exports.container = function () {
         registerLibrary: registerLibrary,
         load: load,
         list: list,
+        find: find,
         clearAll: clearAll
     };
 
