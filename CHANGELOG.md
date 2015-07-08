@@ -1,4 +1,4 @@
-# HEAD
+# 1.2.5
 
 - Added new option `postfix` to add a postfix string to every loaded dependency.
 
