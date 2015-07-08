@@ -110,6 +110,8 @@ exports.container = function () {
      * Return a list of all factories.
      *
      * @returns {object}
+     *
+     * @todo: add feature to filter a list e.g. return every dependency starting with "Model*" or ending with "*Controller"
      */
     var list = function () {
         return factories;
@@ -183,6 +185,10 @@ exports.container = function () {
         // Add a prefix to the dependency's name
         if ('prefix' in options && Utils.isString(options.prefix)) {
             name = options.prefix + name;
+        }
+        // Add a postfix to the dependency's name
+        if ('postfix' in options && Utils.isString(options.postfix)) {
+            name = name + options.postfix;
         }
 
         return register(name, require(module));

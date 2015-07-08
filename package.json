@@ -1,6 +1,6 @@
 {
   "name": "@bruce17/dependable",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "main": "source/index.js",
   "engines": {
     "node": ">=0.10.0",
@@ -30,6 +30,9 @@
     "type": "git",
     "url": "https://github.com/Bruce17/dependable"
   },
+  "bugs": {
+    "url": "https://github.com/Bruce17/dependable/issues"
+  },
   "scripts": {
     "test": "node_modules/.bin/mocha -R spec ",
     "test-watch": "node_modules/.bin/mocha -R nyan --watch",
@@ -44,10 +47,10 @@
     "chai": "^3.0.0",
     "codeclimate-test-reporter": "0.0.4",
     "coveralls": "^2.11.2",
-    "istanbul-harmony": "^0.3.12",
+    "istanbul-harmony": "^0.3.15",
     "mocha": "^2.2.5",
-    "should": "^6.0.3",
-    "sinon": "^1.14.1",
+    "should": "^7.0.1",
+    "sinon": "^1.15.3",
     "sinon-chai": "^2.8.0"
   }
 }

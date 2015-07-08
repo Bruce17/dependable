@@ -1,3 +1,7 @@
+# 1.2.5
+
+- Added new option `postfix` to add a postfix string to every loaded dependency.
+
 # 1.2.4
 
 - It's possible to register a dependency with an undefined/null function as result.
