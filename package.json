@@ -39,7 +39,8 @@
     "test-cov": "node --harmony node_modules/istanbul-harmony/lib/cli.js cover ./node_modules/mocha/bin/_mocha  -- -u exports",
     "test-travis": "node --harmony node_modules/istanbul-harmony/lib/cli.js cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -u exports",
     "coveralls": "./node_modules/.bin/coveralls < ./coverage/lcov.info",
-    "codeclimate": "./node_modules/.bin/codeclimate < ./coverage/lcov.info"
+    "codeclimate": "./node_modules/.bin/codeclimate < ./coverage/lcov.info",
+    "generate-docs": "./node_modules/.bin/jsdoc --destination docs --package package.json --readme README.md --recurse source"
   },
   "license": "MIT",
   "dependencies": {},
@@ -48,6 +49,7 @@
     "codeclimate-test-reporter": "0.0.4",
     "coveralls": "^2.11.2",
     "istanbul-harmony": "^0.3.15",
+    "jsdoc": "^3.3.2",
     "mocha": "^2.2.5",
     "should": "^7.0.1",
     "sinon": "^1.15.3",

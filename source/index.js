@@ -2,6 +2,8 @@
  * @author Michael Raith
  * @email  michael.raith@bcmsolutions.de
  * @date   02.06.2015 09:38
+ *
+ * @namespace Index
  */
 
 var path = require('path');
@@ -12,7 +14,18 @@ var Utils = require('./utils');
 var factories = {};
 var modules = {};
 
-//simple dependency injection. No nesting, just pure simplicity
+/**
+ * simple dependency injection. No nesting, just pure simplicity
+ *
+ * @returns {{}}
+ *
+ * @namespace Container
+ * @memberOf Index
+ *
+ * @example
+ * // Fetch module and init the di-container
+ * var container = require('@bruce17/dependable').container();
+ */
 exports.container = function () {
     'use strict';
 
@@ -39,6 +52,39 @@ exports.container = function () {
      * @param {function}      func If a name is given, register this function.
      *
      * @returns {Array|function}
+     *
+     * @function register
+     * @memberOf Index.Container
+     *
+     * @example
+     * // Register some simple dependencies
+     * container.register('occupation', 'tax attorney');
+     * container.register('transport', {
+     *   type: 'station wagon',
+     *   material: 'wood-paneled'
+     * });
+     * container.register({
+     *   'foo': 'bar',
+     *   'obj': {
+     *     'str': 'test',
+     *     'num': 123
+     *   }
+     * });
+     *
+     * // Register a dependency that has other dependencies
+     * container.register('song', function (occupation, transport, legalStatus) {
+     *   var song = {};
+     *
+     *   song.chorus = function chorus() {
+     *     return [
+     *       'I\'m a ' + occupation,
+     *       'On a ' + transport.material + ' ' + transport.type + ' I ride',
+     *       'And I\'m ' + legalStatus.message
+     *     ].join('\n');
+     *   };
+     *
+     *   return song;
+     * });
      */
     var register = function (name, func) {
         if (Utils.isObject(name)) {
@@ -71,6 +117,21 @@ exports.container = function () {
      * @param {function}      func If a name is given, register this function.
      *
      * @returns {Array|function}
+     *
+     * @function registerLibrary
+     * @memberOf Index.Container
+     *
+     * @example
+     * // Register some library methods
+     * var lodash = require('lodash');
+     * var promise = require('promise');
+     * var express = require('express');
+     *
+     * container.registerLibrary('lodash', lodash);
+     * container.registerLibrary({
+     *   'promise': promise,
+     *   'express': express
+     * });
      */
     var registerLibrary = function (name, func) {
         if (Utils.isObject(name)) {
@@ -106,6 +167,10 @@ exports.container = function () {
      * @param {function} func
      *
      * @returns {function}
+     *
+     * @function registerOne
+     * @memberOf Index.Container
+     * @protected
      */
     var registerOne = function (name, func) {
         factories[name] = toFactory(func);
@@ -116,6 +181,9 @@ exports.container = function () {
      * Return a list of all factories.
      *
      * @returns {object}
+     *
+     * @function list
+     * @memberOf Index.Container
      */
     var list = function () {
         return factories;
@@ -125,6 +193,18 @@ exports.container = function () {
      * Return a list all matching factories.
      *
      * @param {string} searchPattern An matching factory name including optional asterisk characters as placeholders.
+     *
+     * @function find
+     * @memberOf Index.Container
+     *
+     * @example
+     * // Find a dependency by its full name
+     * var result = container.find('lodash');
+     * console.log('lodash', result.lodash);
+     *
+     * // Find more dependencies
+     * var controllers = container.find('*Controller');
+     * console.log('controllers', controllers); // e.g. "IndexController", "AuthController", etc.
      */
     var find = function (searchPattern) {
         var result = {};
@@ -158,6 +238,28 @@ exports.container = function () {
      * @param {object} options   Pass optional options to this method.
      *
      * @returns {Array|function} A list of register files or just one register file function.
+     *
+     * @function load
+     * @memberOf Index.Container
+     *
+     * @example
+     * // Load all dependencies in a directory
+     * container.load(__dirname + '/services');
+     * // e.g. loads "Image.js", "Excel.js", "Export.js"
+     *
+     * // Load all dependencies in a directory and subdirectories
+     * container.load(__dirname + '/models', ['user', 'role']);
+     * // e.g. loads "user/Foo.js", "user/Bar.js", "role/NoAccess.js", "role/Admin.js"
+     *
+     * // Load all dependencies in a directory and prepend a prefix
+     * container.load(__dirname + '/models', {prefix: 'Model'});
+     * // e.g. loads "Foo.js" into "ModelFoo" or "Bar.js" into "ModelBar"
+     *
+     * // Load all dependencies in a directory, subdirectories and prepend a prefix
+     * container.load(__dirname + '/models', ['user', 'role'], {prefix: 'Model'});
+     * // e.g. loads "user/Foo.js" into "ModelFoo" or "role/Admin.js" into "ModelAdmin"
+     *
+     * // You can also use "postfix" to append a optional string to every loaded dependency.
      */
     var load = function (fileOrDir, subDirs, options) {
         // Maybe the user only passed two arguments an "path" + "options". Adjust the arguments in that case.
@@ -203,6 +305,10 @@ exports.container = function () {
      * @param {object} options Pass optional options to this method.
      *
      * @returns {function}
+     *
+     * @function loadFile
+     * @memberOf Index.Container
+     * @protected
      */
     var loadFile = function (file, options) {
         options = (Utils.isObject(options) ? options : {});
@@ -233,6 +339,10 @@ exports.container = function () {
      * @param {object} options Pass optional options to this method.
      *
      * @returns {Array}
+     *
+     * @function loadDir
+     * @memberOf Index.Container
+     * @protected
      */
     var loadDir = function (dir, options) {
         var fileNames = fs.readdirSync(dir);
@@ -270,6 +380,10 @@ exports.container = function () {
      * @param {function} func
      *
      * @returns {object}
+     *
+     * @function toFactory
+     * @memberOf Index.Container
+     * @protected
      */
     var toFactory = function (func) {
         if (typeof func === 'function') {
@@ -294,6 +408,10 @@ exports.container = function () {
      * @param {function} func
      *
      * @returns {Array}
+     *
+     * @function argList
+     * @memberOf Index.Container
+     * @protected
      */
     var argList = function (func) {
         // match over multiple lines
@@ -316,6 +434,10 @@ exports.container = function () {
      * @param {*} arg
      *
      * @returns {boolean}
+     *
+     * @function notEmpty
+     * @memberOf Index.Container
+     * @protected
      */
     var notEmpty = function (arg) {
         return arg;
@@ -329,6 +451,14 @@ exports.container = function () {
      * @param {Array}  visited
      *
      * @TODO: add visitation / detect require loops
+     *
+     * @function get
+     * @memberOf Index.Container
+     *
+     * @example
+     * // Get a dependency from the di-container
+     * var _ = container.get('lodash');
+     * var IndexController = container.get('IndexController');
      */
     var get = function (name, overrides, visited) {
         if (visited === undefined) {
@@ -388,6 +518,10 @@ exports.container = function () {
      * @param {string} name
      *
      * @returns {Number}
+     *
+     * @function haveVisited
+     * @memberOf Index.Container
+     * @protected
      */
     var haveVisited = function (visited, name) {
         return visited.filter(function (n) {
@@ -400,6 +534,14 @@ exports.container = function () {
      *
      * @param {object}   overrides
      * @param {function} func
+     *
+     * @function resolve
+     * @memberOf Index.Container
+     *
+     * @example
+     * container.resolve(function (lodash) {
+     *   console.log('lodash', lodash);
+     * });
      */
     var resolve = function (overrides, func) {
         if (!func) {
@@ -411,6 +553,13 @@ exports.container = function () {
         return get('__temp', overrides, []);
     };
 
+    /**
+     * Register this di-container itself into the container.
+     *
+     * @function registerContainer
+     * @memberOf Index.Container
+     * @protected
+     */
     var registerContainer = function () {
         // Let people access the container if they know what they're doing
         container.register('_container', container);
@@ -418,6 +567,10 @@ exports.container = function () {
 
     /**
      * Clear all dependencies
+     *
+     * @function clearAll
+     * @memberOf Index.Container
+     * @protected
      */
     var clearAll = function () {
         factories = {};

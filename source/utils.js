@@ -2,6 +2,8 @@
  * @author Michael Raith
  * @email  michael.raith@bcmsolutions.de
  * @date   10.06.2015 15:03
+ *
+ * @namespace Utils
  */
 
 'use strict';
@@ -20,6 +22,9 @@ var regexInst = {
  * @param {*} ary
  *
  * @returns {boolean}
+ *
+ * @function isArray
+ * @memberOf Utils
  */
 exports.isArray = function isObject(ary) {
     return (ary === Object(ary)) && (ary instanceof Array);
@@ -31,6 +36,9 @@ exports.isArray = function isObject(ary) {
  * @param {*} obj
  *
  * @returns {boolean}
+ *
+ * @function isObject
+ * @memberOf Utils
  */
 exports.isObject = function isObject(obj) {
     return (obj === Object(obj)) && !(obj instanceof Array);
@@ -42,6 +50,9 @@ exports.isObject = function isObject(obj) {
  * @param {*} str
  *
  * @returns {boolean}
+ *
+ * @function isString
+ * @memberOf Utils
  */
 exports.isString = function isString(str) {
     return (str === String(str)) ||
@@ -54,6 +65,9 @@ exports.isString = function isString(str) {
  * @param {*} value
  *
  * @returns {boolean}
+ *
+ * @function isUndefined
+ * @memberOf Utils
  */
 exports.isUndefined = function isUndefined(value) {
     return value === undefined;
@@ -66,6 +80,9 @@ exports.isUndefined = function isUndefined(value) {
  * @param {*}     needle
  *
  * @returns {boolean}
+ *
+ * @function inArray
+ * @memberOf Utils
  */
 exports.inArray = function inArray(haystack, needle) {
     var result = false;
@@ -88,6 +105,9 @@ exports.inArray = function inArray(haystack, needle) {
  * @param {*} b
  *
  * @returns {boolean}
+ *
+ * @function simpleCompare
+ * @memberOf Utils
  */
 exports.simpleCompare = function simpleCompare(a, b) {
     var result = false;
@@ -109,6 +129,9 @@ exports.simpleCompare = function simpleCompare(a, b) {
  * @returns {string}
  *
  * @NOTICE: this method is borrowed from "lodash"
+ *
+ * @function escapeRegex
+ * @memberOf Utils
  */
 exports.escapeRegex = function escapeRegex(string) {
     string = (this.isString(string) ? string : '');
