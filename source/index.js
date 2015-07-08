@@ -124,7 +124,7 @@ exports.container = function () {
     /**
      * Return a list all matching factories.
      *
-     * @param {string} searchPattern A regular expression
+     * @param {string} searchPattern An matching factory name including optional asterisk characters as placeholders.
      */
     var find = function (searchPattern) {
         var result = {};
