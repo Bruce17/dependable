@@ -3,6 +3,9 @@ language: node_js
 
 # define node.js versions to run on
 node_js:
+  - "6.3.0"
+  - "5.12.0"
+  - "4.4.7"
   - "0.12"
   - "0.10"
   - "iojs"
