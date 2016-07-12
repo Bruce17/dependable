@@ -1,8 +1,19 @@
 # IDE
 .idea
+.c9
 
 # node
 node_modules
 
 # misc
+.git
 .DS_Store
+.codeclimate.yml
+.jscsrc
+.jshintignore
+.jshintrc
+.travis.yml
+
+# test
+coverage
+test
