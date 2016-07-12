@@ -1,3 +1,8 @@
+# 1.2.7
+
+- Update dependencies to their latest version.
+- Update travis build.
+
 # 1.2.6
 
 - Implemented new method `find` to search for registered dependencies by a search string containing placeholder fields e.g. search for "foo*" to receive all dependencies starting with "foo".
