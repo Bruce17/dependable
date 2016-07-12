@@ -1,5 +1,4 @@
-Dependable
-==========
+# Dependable
 
 A minimalist dependency injection framework for node.js.
 
