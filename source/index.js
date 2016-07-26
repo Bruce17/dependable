@@ -36,7 +36,7 @@ exports.container = function () {
         fileEnding: /\.\w+$/,
         dashes: /\-(\w)/g,
         scriptFiles: /\.(js|coffee)$/,
-        strFunc: /function.*?\(([\s\S]*?)\)/
+        strFunc: /[function.*]?\(([\s\S]*?)\)/
     };
 
     // Define a list of factory names which should be blacklisted e.g. in method "find"
