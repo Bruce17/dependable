@@ -36,7 +36,8 @@ exports.container = function () {
         fileEnding: /\.\w+$/,
         dashes: /\-(\w)/g,
         scriptFiles: /\.(js|coffee)$/,
-        strFunc: /function.*?\(([\s\S]*?)\)/
+        strFunc: /function.+\(([\s\S]*?)\)/,
+        strFuncES6: /\(([\s\S]*?)\)\s*\=>/
     };
 
     // Define a list of factory names which should be blacklisted e.g. in method "find"
@@ -414,11 +415,16 @@ exports.container = function () {
      * @protected
      */
     var argList = function (func) {
-        // match over multiple lines
+        // Normal ES5 function check
         var match = func.toString().match(regex.strFunc);
 
         if (!match) {
-            throw new Error('Could not parse function arguments: ' + func.toString());
+            // ES6 fat arrow function check
+            match = func.toString().match(regex.strFuncES6);
+
+            if (!match) {
+                throw new Error('Could not parse function arguments: ' + func.toString());
+            }
         }
 
         return match[1].split(',')
