@@ -1103,6 +1103,34 @@ describe('inject', function () {
                     });
                 });
             });
+            it('should read dependencies from a multi line ES6 fat arrow function', function (done) {
+                var afile = path.join(os.tmpDir(), 'AA1.js');
+                var acode = 'module.exports = () => {\nreturn "a";\n}\n';
+                testFiles.push(afile);
+
+                var bfile = path.join(os.tmpDir(), 'BB1.js');
+                var bcode = 'module.exports = (\nAA1\n) => {\nreturn AA1 + "b";\n}\n';
+                testFiles.push(bfile);
+
+                fs.writeFile(afile, acode, function (err) {
+                    assert.ifError(err);
+
+                    container.load(afile);
+
+                    var a = container.get('AA1');
+                    assert.equal(a, 'a');
+
+                    fs.writeFile(bfile, bcode, function (err) {
+                        assert.ifError(err);
+
+                        container.load(bfile);
+                        var b = container.get('BB1');
+                        assert.equal(b, 'ab');
+
+                        done();
+                    });
+                });
+            });
         });
     });
 
