@@ -3,6 +3,10 @@
 - Update unit tests:
     - Add missing asserts.
     - Add tests to register a function (in preparation of ES6 fat arrow functions).
+- Add new script `lint` (run via `npm run lint`) to lint project files using eslint.
+    - Adjust usage of `'use strict'` in `source/utils.js`.
+    - Adjust eslint rule to warn if function is used before it was defined.
+    - Convert jshint-ignore statements to eslint.
 
 # 1.2.7
 

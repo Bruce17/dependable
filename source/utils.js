@@ -6,8 +6,6 @@
  * @namespace Utils
  */
 
-'use strict';
-
 var regex = {
     escape: /[.*+?^${}()|[\]\/\\]/g
 };
@@ -27,6 +25,8 @@ var regexInst = {
  * @memberOf Utils
  */
 exports.isArray = function isObject(ary) {
+    'use strict';
+
     return (ary === Object(ary)) && (ary instanceof Array);
 };
 
@@ -41,6 +41,8 @@ exports.isArray = function isObject(ary) {
  * @memberOf Utils
  */
 exports.isObject = function isObject(obj) {
+    'use strict';
+
     return (obj === Object(obj)) && !(obj instanceof Array);
 };
 
@@ -55,8 +57,12 @@ exports.isObject = function isObject(obj) {
  * @memberOf Utils
  */
 exports.isString = function isString(str) {
-    return (str === String(str)) ||
-        (this.isObject(str) && str.valueOf() === String(str.valueOf()));
+    'use strict';
+
+    return (
+        (str === String(str)) ||
+        (this.isObject(str) && str.valueOf() === String(str.valueOf()))
+    );
 };
 
 /**
@@ -70,6 +76,8 @@ exports.isString = function isString(str) {
  * @memberOf Utils
  */
 exports.isUndefined = function isUndefined(value) {
+    'use strict';
+
     return value === undefined;
 };
 
@@ -85,15 +93,20 @@ exports.isUndefined = function isUndefined(value) {
  * @memberOf Utils
  */
 exports.inArray = function inArray(haystack, needle) {
+    'use strict';
+
     var result = false;
+
     if (this.isArray(haystack)) {
         var count = haystack.length;
+
         for (var i = 0; i < count; i++) {
             if (this.simpleCompare(haystack[i], needle)) {
                 result = true;
             }
         }
     }
+
     return result;
 };
 
@@ -110,7 +123,10 @@ exports.inArray = function inArray(haystack, needle) {
  * @memberOf Utils
  */
 exports.simpleCompare = function simpleCompare(a, b) {
+    'use strict';
+
     var result = false;
+
     if (this.isObject(a) && this.isObject(b)) {
         result = (JSON.stringify(a) === JSON.stringify(b));
     }
@@ -134,10 +150,12 @@ exports.simpleCompare = function simpleCompare(a, b) {
  * @memberOf Utils
  */
 exports.escapeRegex = function escapeRegex(string) {
-    string = (this.isString(string) ? string : '');
+    'use strict';
 
-    return (string && regexInst.escape.test(string)) ?
-        string.replace(regex.escape, '\\$&') :
-        string
+    var escapeString = (this.isString(string) ? string : '');
+
+    return (escapeString && regexInst.escape.test(escapeString)) ?
+        escapeString.replace(regex.escape, '\\$&') :
+        escapeString
     ;
 };
