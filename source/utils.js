@@ -1,6 +1,6 @@
 /**
  * @author Michael Raith
- * @email  michael.raith@bcmsolutions.de
+ * @email  mraith@gmail.com
  * @date   10.06.2015 15:03
  *
  * @namespace Utils

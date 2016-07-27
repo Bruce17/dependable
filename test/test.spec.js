@@ -1,8 +1,10 @@
 /**
  * @author Michael Raith
- * @email  michael.raith@bcmsolutions.de
+ * @email  mraith@gmail.com
  * @date   02.06.2015 11:38
  */
+
+/* global expect */
 
 var container = require('../source/index').container();
 var assert = require('assert');
@@ -499,6 +501,8 @@ describe('inject', function () {
      */
     describe('register()', function () {
         var depA, depB;
+        var depFnc1, depFnc2, depFnc3, depFnc4;
+        var result1, result2, result3, result4;
 
         beforeEach(function () {
             depA = 'foo bar';
@@ -510,33 +514,111 @@ describe('inject', function () {
                     ary: [1, 2, 3]
                 }
             };
+            
+            depFnc1 = function () {
+                return 'foo';
+            };
+            depFnc2 = function foo() {
+                return 'bar';
+            };
+            depFnc3 = function (depFnc1,depFnc2) { // no whitespace between args
+                return depFnc1 + ' ' + depFnc2;
+            };
+            depFnc4 = function foo(   depFnc1,    depFnc2   ) { // with whitespace between args
+                return depFnc2+ ' ' + depFnc1;
+            };
+            
+            result1 = 'foo';
+            result2 = 'bar';
+            result3 = 'foo bar';
+            result4 = 'bar foo';
         });
 
         it('should exist', function () {
             expect(container.register).to.be.ok;
             expect(container.register).to.be.a('function');
         });
-
-        it('should register a dependency', function () {
-            container.register('depA', depA);
-            container.register('depB', depB);
-
-            expect(container.get('depA')).to.equal(depA);
-            expect(container.get('depA')).to.not.equal(depB);
-            expect(container.get('depB')).to.equal(depB);
-            expect(container.get('depB')).to.not.equal(depA);
-        });
-
-        it('should register a dependency via hash', function () {
-            container.register({
-                depA: depA,
-                depB: depB
+        
+        describe('type "string" and "object"', function () {
+            it('should register a dependency', function () {
+                container.register('depA', depA);
+                container.register('depB', depB);
+    
+                expect(container.get('depA')).to.equal(depA);
+                expect(container.get('depA')).to.not.equal(depB);
+                expect(container.get('depB')).to.equal(depB);
+                expect(container.get('depB')).to.not.equal(depA);
             });
+    
+            it('should register a dependency via hash', function () {
+                container.register({
+                    depA: depA,
+                    depB: depB
+                });
+    
+                expect(container.get('depA')).to.equal(depA);
+                expect(container.get('depA')).to.not.equal(depB);
+                expect(container.get('depB')).to.equal(depB);
+                expect(container.get('depB')).to.not.equal(depA);
+            });
+        });
+        
+        describe('type "function"', function () {
+            it('should register a dependency', function () {
+                container.register('depFnc1', depFnc1);
+                container.register('depFnc2', depFnc2);
+                container.register('depFnc3', depFnc3);
+                container.register('depFnc4', depFnc4);
 
-            expect(container.get('depA')).to.equal(depA);
-            expect(container.get('depA')).to.not.equal(depB);
-            expect(container.get('depB')).to.equal(depB);
-            expect(container.get('depB')).to.not.equal(depA);
+                expect(container.get('depFnc1')).to.equal(result1);
+                expect(container.get('depFnc1')).to.not.equal(result2);
+                expect(container.get('depFnc1')).to.not.equal(result3);
+                expect(container.get('depFnc1')).to.not.equal(result4);
+    
+                expect(container.get('depFnc2')).to.not.equal(result1);
+                expect(container.get('depFnc2')).to.equal(result2);
+                expect(container.get('depFnc2')).to.not.equal(result3);
+                expect(container.get('depFnc2')).to.not.equal(result4);
+    
+                expect(container.get('depFnc3')).to.not.equal(result1);
+                expect(container.get('depFnc3')).to.not.equal(result2);
+                expect(container.get('depFnc3')).to.equal(result3);
+                expect(container.get('depFnc3')).to.not.equal(result4);
+    
+                expect(container.get('depFnc4')).to.not.equal(result1);
+                expect(container.get('depFnc4')).to.not.equal(result2);
+                expect(container.get('depFnc4')).to.not.equal(result3);
+                expect(container.get('depFnc4')).to.equal(result4);
+            });
+    
+            it('should register a dependency via hash', function () {
+                container.register({
+                    depFnc1: depFnc1,
+                    depFnc2: depFnc2,
+                    depFnc3: depFnc3,
+                    depFnc4: depFnc4,
+                });
+
+                expect(container.get('depFnc1')).to.equal(result1);
+                expect(container.get('depFnc1')).to.not.equal(result2);
+                expect(container.get('depFnc1')).to.not.equal(result3);
+                expect(container.get('depFnc1')).to.not.equal(result4);
+    
+                expect(container.get('depFnc2')).to.not.equal(result1);
+                expect(container.get('depFnc2')).to.equal(result2);
+                expect(container.get('depFnc2')).to.not.equal(result3);
+                expect(container.get('depFnc2')).to.not.equal(result4);
+    
+                expect(container.get('depFnc3')).to.not.equal(result1);
+                expect(container.get('depFnc3')).to.not.equal(result2);
+                expect(container.get('depFnc3')).to.equal(result3);
+                expect(container.get('depFnc3')).to.not.equal(result4);
+    
+                expect(container.get('depFnc4')).to.not.equal(result1);
+                expect(container.get('depFnc4')).to.not.equal(result2);
+                expect(container.get('depFnc4')).to.not.equal(result3);
+                expect(container.get('depFnc4')).to.equal(result4);
+            });
         });
     });
 

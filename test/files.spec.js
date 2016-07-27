@@ -1,3 +1,9 @@
+/**
+ * @author Michael Raith
+ * @email  mraith@gmail.com
+ * @date   02.06.2015 11:38
+ */
+
 var path = require('path');
 var assert = require('assert');
 var container = require('../source/index').container;

@@ -1,3 +1,9 @@
+# HEAD
+
+- Update unit tests:
+    - Add missing asserts.
+    - Add tests to register a function (in preparation of ES6 fat arrow functions).
+
 # 1.2.7
 
 - Update dependencies to their latest version.
