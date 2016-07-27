@@ -1,5 +1,11 @@
+/**
+ * @author Michael Raith
+ * @email  mraith@gmail.com
+ * @date   27.07.2016 09:15
+ */
+
 var container = require('../source/index').container();
-//var assert = require('assert');
+var assert = require('assert');
 
 describe('resolve', function () {
     beforeEach(function () {
@@ -11,10 +17,38 @@ describe('resolve', function () {
         container.register('bar', 'hurp');
         container.register('baz', 1);
     });
+    
+    describe('correctly parses functions with', function () {
+        it('no whitespaces in the argument lists', function (done) {
+            container.resolve(function (foo,bar,baz) {
+                assert.deepEqual(foo, {});
+                assert.equal(bar, 'hurp');
+                assert.equal(baz, 1);
 
-    it('correctly parses functions with newlines in the argument lists', function (done) {
-        container.resolve(function (foo, bar, baz) {
-            done();
+                done();
+            });
+        });
+    
+        it('whitespaces in the argument lists', function (done) {
+            container.resolve(function (foo, bar, baz) {
+                assert.deepEqual(foo, {});
+                assert.equal(bar, 'hurp');
+                assert.equal(baz, 1);
+
+                done();
+            });
+        });
+        
+        it('newlines in the argument lists', function (done) {
+            container.resolve(function (foo,
+                                        bar, 
+                                        baz) {
+                assert.deepEqual(foo, {});
+                assert.equal(bar, 'hurp');
+                assert.equal(baz, 1);
+
+                done();
+            });
         });
     });
 });

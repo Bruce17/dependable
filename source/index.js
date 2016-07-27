@@ -1,6 +1,6 @@
 /**
  * @author Michael Raith
- * @email  michael.raith@bcmsolutions.de
+ * @email  mraith@gmail.com
  * @date   02.06.2015 09:38
  *
  * @namespace Index
@@ -143,7 +143,6 @@ exports.container = function () {
 
             for (key in hash) {
                 if (hash.hasOwnProperty(key)) {
-                    /* jshint -W083 */
                     results.push(registerOne(key, (function (library) {
                         return function () {
                             return library;
@@ -471,7 +470,7 @@ exports.container = function () {
             visited = [];
         }
 
-        /* jshint -W116 */
+        // eslint-disable-next-line eqeqeq
         var isOverridden = (overrides != null);
 
         // Check for circular dependencies
