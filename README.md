@@ -21,11 +21,14 @@ A minimalist dependency injection framework for node.js.
 [![coverage:?](https://img.shields.io/coveralls/Bruce17/dependable/master.svg?style=flat-square)](https://coveralls.io/r/Bruce17/dependable)
 
 **Codacy**:
-[![Codacy Badge](https://api.codacy.com/project/badge/grade/3424bd58c7ad43ceabf232e33d86d40b)](https://www.codacy.com/app/mraith/dependable)
-[![Codacy Coverage](https://api.codacy.com/project/badge/coverage/3424bd58c7ad43ceabf232e33d86d40b)](https://www.codacy.com/app/mraith/dependable)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3424bd58c7ad43ceabf232e33d86d40b)](https://www.codacy.com/app/mraith/dependable)
+[![Codacy Coverage](https://api.codacy.com/project/badge/Coverage/3424bd58c7ad43ceabf232e33d86d40b)](https://www.codacy.com/app/mraith/dependable)
 
 **Tarvis CI**:
-[![Travis CI](https://travis-ci.org/Bruce17/dependable.svg?style=flat-square)](https://travis-ci.org/Bruce17/dependable)
+[![Build Status - Travis CI](https://travis-ci.org/Bruce17/dependable.svg?branch=master)](https://travis-ci.org/Bruce17/dependable)
+
+**AppVeyor CI**:
+[![Build status - AppVeyor CI](https://ci.appveyor.com/api/projects/status/me1uol5uvaak0xtg/branch/master?svg=true)](https://ci.appveyor.com/project/Bruce17/dependable/branch/master)
 
 **Snyk**:
 [![Known Vulnerabilities](https://snyk.io/test/github/bruce17/dependable/badge.svg)](https://snyk.io/test/github/bruce17/dependable)

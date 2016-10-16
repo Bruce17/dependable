@@ -3,10 +3,12 @@ language: node_js
 
 # define node.js versions to run on
 node_js:
+  - "stable"
   - "6"
   - "5"
   - "4"
   - "0.12"
+  - "0.11"
   - "0.10"
   - "iojs"
 
