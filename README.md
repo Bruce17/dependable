@@ -9,7 +9,8 @@ A minimalist dependency injection framework for node.js.
 [![devDependency Status](https://david-dm.org/Bruce17/dependable/dev-status.svg?style=flat-square)](https://david-dm.org/Bruce17/dependable?type=dev)
 [![code climate](https://img.shields.io/codeclimate/github/Bruce17/dependable.svg?style=flat-square)](https://codeclimate.com/github/Bruce17/dependable)
 [![coverage:?](https://img.shields.io/coveralls/Bruce17/dependable/master.svg?style=flat-square)](https://coveralls.io/r/Bruce17/dependable)
-[![Travis CI](https://travis-ci.org/Bruce17/dependable.svg?style=flat-square)](https://travis-ci.org/Bruce17/dependable)
+[![Build status - Travis CI](https://travis-ci.org/Bruce17/dependable.svg?style=flat-square)](https://travis-ci.org/Bruce17/dependable)
+[![Build status - AppVeyor CI](https://ci.appveyor.com/api/projects/status/me1uol5uvaak0xtg?svg=true)](https://ci.appveyor.com/project/Bruce17/dependable)
 
 
 ## Example
