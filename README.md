@@ -3,12 +3,28 @@
 A minimalist dependency injection framework for node.js.
 
 
+**NPM**:
 [![npm package](https://img.shields.io/npm/v/@bruce17/dependable.svg?style=flat-square)](https://www.npmjs.org/package/@bruce17/dependable)
+
+**GitHub**:
 [![tag:?](https://img.shields.io/github/tag/Bruce17/dependable.svg?style=flat-square)](https://github.com/Bruce17/dependable/releases)
+
+**Dependencies**:
 [![Dependency Status](https://david-dm.org/Bruce17/dependable.svg?style=flat-square)](https://david-dm.org/Bruce17/dependable)
 [![devDependency Status](https://david-dm.org/Bruce17/dependable/dev-status.svg?style=flat-square)](https://david-dm.org/Bruce17/dependable?type=dev)
+
+**Code Climate**:
 [![code climate](https://img.shields.io/codeclimate/github/Bruce17/dependable.svg?style=flat-square)](https://codeclimate.com/github/Bruce17/dependable)
+[![Test Coverage](https://codeclimate.com/github/Bruce17/dependable/badges/coverage.svg)](https://codeclimate.com/github/Bruce17/dependable/coverage)
+
+**Coveralls**:
 [![coverage:?](https://img.shields.io/coveralls/Bruce17/dependable/master.svg?style=flat-square)](https://coveralls.io/r/Bruce17/dependable)
+
+**Codacy**:
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/3424bd58c7ad43ceabf232e33d86d40b)](https://www.codacy.com/app/mraith/dependable)
+[![Codacy Coverage](https://api.codacy.com/project/badge/coverage/3424bd58c7ad43ceabf232e33d86d40b)](https://www.codacy.com/app/mraith/dependable)
+
+**Tarvis CI**:
 [![Travis CI](https://travis-ci.org/Bruce17/dependable.svg?style=flat-square)](https://travis-ci.org/Bruce17/dependable)
 
 
