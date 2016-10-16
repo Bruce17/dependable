@@ -27,6 +27,9 @@ A minimalist dependency injection framework for node.js.
 **Tarvis CI**:
 [![Travis CI](https://travis-ci.org/Bruce17/dependable.svg?style=flat-square)](https://travis-ci.org/Bruce17/dependable)
 
+**Snyk**:
+[![Known Vulnerabilities](https://snyk.io/test/github/bruce17/dependable/badge.svg)](https://snyk.io/test/github/bruce17/dependable)
+
 
 ## Example
 
