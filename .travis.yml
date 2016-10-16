@@ -28,3 +28,5 @@ after_success:
   - npm run-script coveralls
   # send coverage data to codeclimate
   - npm run-script codeclimate
+  # send coverage data to codacy
+  - npm run-script codacy
