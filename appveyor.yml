@@ -1,0 +1,54 @@
+version: 1.0.{build}-{branch}
+
+environment:
+  matrix:
+    # Install the latest version
+    - nodejs_version: "0"
+    - nodejs_version: "6"
+    - nodejs_version: "5"
+    - nodejs_version: "4"
+    - nodejs_version: "0.12"
+    - nodejs_version: "0.11"
+    - nodejs_version: "0.10"
+    # io.js
+    - nodejs_version: "1"
+
+platform:
+  - x86
+  - x64
+
+matrix:
+  # Fail fast and stop on build errors for the current tested version.
+  fast_finish: true
+
+cache:
+  - node_modules -> package.json
+
+# Fix Git line endings on checkout
+#init:
+#  - git config --global core.autocrlf true
+
+install:
+  - ps: Install-Product node $env:nodejs_version $env:platform
+  - npm install
+
+test_script:
+  # Output used NodeJS/NPM versions
+  - node --version
+  - npm --version
+
+  # run lint
+  - npm run-script lint
+
+  # run tests
+  - npm run-script test-travis
+
+#after_test:
+#  # send coverage data to coveralls
+#  - npm run-script coveralls
+#
+#  # send coverage data to codeclimate
+#  - npm run-script codeclimate
+
+# Don't actually build.
+build: off  
