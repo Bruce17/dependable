@@ -51,7 +51,7 @@
     "codacy-coverage": "^2.0.0",
     "codeclimate-test-reporter": "^0.5.0",
     "coveralls": "^3.0.0",
-    "eslint": "^3.19.0",
+    "eslint": "^2.13.1",
     "istanbul-harmony": "^0.3.15",
     "jsdoc": "^3.3.2",
     "mocha": "^3.5.3",
