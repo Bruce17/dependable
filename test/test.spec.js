@@ -1358,7 +1358,7 @@ describe('inject', function () {
             var dependencies = container.find('');
 
             expect(dependencies).to.be.ok;
-            expect(dependencies).to.be.an.object;
+            expect(dependencies).to.be.an('object');
             expect(Object.keys(dependencies)).to.have.length(0);
         });
 
@@ -1366,7 +1366,7 @@ describe('inject', function () {
             var dependencies = container.find('*');
 
             expect(dependencies).to.be.ok;
-            expect(dependencies).to.be.an.object;
+            expect(dependencies).to.be.an('object');
             expect(Object.keys(dependencies)).to.have.length(8);
         });
 
@@ -1374,7 +1374,7 @@ describe('inject', function () {
             var dependencies = container.find('dep*');
 
             expect(dependencies).to.be.ok;
-            expect(dependencies).to.be.an.object;
+            expect(dependencies).to.be.an('object');
             expect(Object.keys(dependencies)).to.have.length(2);
             expect(dependencies).to.have.property('depA');
             expect(dependencies).to.have.property('depB');
@@ -1384,7 +1384,7 @@ describe('inject', function () {
             var dependencies = container.find('abh*');
 
             expect(dependencies).to.be.ok;
-            expect(dependencies).to.be.an.object;
+            expect(dependencies).to.be.an('object');
             expect(Object.keys(dependencies)).to.have.length(2);
             expect(dependencies).to.have.property('abhC');
             expect(dependencies).to.have.property('abhD');
@@ -1394,7 +1394,7 @@ describe('inject', function () {
             var dependencies = container.find('lib*');
 
             expect(dependencies).to.be.ok;
-            expect(dependencies).to.be.an.object;
+            expect(dependencies).to.be.an('object');
             expect(Object.keys(dependencies)).to.have.length(2);
             expect(dependencies).to.have.property('libA');
             expect(dependencies).to.have.property('libB');
@@ -1404,7 +1404,7 @@ describe('inject', function () {
             var dependencies = container.find('bib*');
 
             expect(dependencies).to.be.ok;
-            expect(dependencies).to.be.an.object;
+            expect(dependencies).to.be.an('object');
             expect(Object.keys(dependencies)).to.have.length(2);
             expect(dependencies).to.have.property('bibC');
             expect(dependencies).to.have.property('bibD');
@@ -1414,7 +1414,7 @@ describe('inject', function () {
             var dependencies = container.find('*A');
 
             expect(dependencies).to.be.ok;
-            expect(dependencies).to.be.an.object;
+            expect(dependencies).to.be.an('object');
             expect(Object.keys(dependencies)).to.have.length(2);
             expect(dependencies).to.have.property('depA');
             expect(dependencies).to.have.property('libA');
@@ -1424,7 +1424,7 @@ describe('inject', function () {
             var dependencies = container.find('depA');
 
             expect(dependencies).to.be.ok;
-            expect(dependencies).to.be.an.object;
+            expect(dependencies).to.be.an('object');
             expect(Object.keys(dependencies)).to.have.length(1);
             expect(dependencies).to.have.property('depA');
         });
@@ -1433,7 +1433,7 @@ describe('inject', function () {
             var dependencies = container.find('bib.*');
 
             expect(dependencies).to.be.ok;
-            expect(dependencies).to.be.an.object;
+            expect(dependencies).to.be.an('object');
             expect(Object.keys(dependencies)).to.have.length(0);
         });
     });
