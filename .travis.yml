@@ -4,6 +4,11 @@ language: node_js
 # define node.js versions to run on
 node_js:
   - "stable"
+  - "9"
+  - "8.9" # something is broken between Node.js v8.2 and v8.9
+  - "8.3"
+  - "8.2"
+  - "7"
   - "6"
   - "5"
   - "4"
