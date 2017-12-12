@@ -36,7 +36,7 @@ exports.container = function () {
         fileEnding: /\.\w+$/,
         dashes: /\-(\w)/g,
         scriptFiles: /\.(js|coffee)$/,
-        strFunc: /function.+\(([\s\S]*?)\)/,
+        strFunc: /function.*\(([\s\S]*?)\)/,
         strFuncES6: /\(([\s\S]*?)\)\s*\=>/
     };
 
