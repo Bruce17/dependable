@@ -251,7 +251,7 @@ You can also run tests with a watcher: `npm run-script test-watch`.
 
 This is a fork of the original [dependable](https://github.com/idottv/dependable) node module.
 The original module on npm was outdated and not maintenanced any more.
-I forked the original one, removed coffee script (ugly crab in my eyes) and made the whole thing work again.
+I forked the original one, removed coffee script (ugly crap in my eyes) and made the whole thing work again.
 
 ## License
 
