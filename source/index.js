@@ -36,7 +36,7 @@ exports.container = function () {
             lib.clearAll();
 
             lib.registerContainer(container);
-        },
+        }
     };
 
     var factories = lib.list();

@@ -144,5 +144,5 @@ exports.escapeRegex = function escapeRegex(string) {
     return (escapeString && regexInst.escape.test(escapeString)) ?
         escapeString.replace(regex.escape, '\\$&') :
         escapeString
-        ;
+    ;
 };
