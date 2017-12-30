@@ -33,6 +33,8 @@ jobs:
     - stage: external-tools
       node_js: stable
       script:
+        - npm run test-travis
+
         # send coverage data to coveralls
         - npm run-script coveralls
         # send coverage data to codeclimate
