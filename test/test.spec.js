@@ -7,10 +7,22 @@
 /* global expect */
 
 var container = require('../source/index').container();
+var features = require('./features');
 var assert = require('assert');
 var fs = require('fs');
 var os = require('os');
 var path = require('path');
+
+
+/**
+ * Return os temp directory.
+ *
+ * @return {string}
+ */
+var getTempDir = function () {
+    return (typeof os.tmpdir !== 'undefined' ? os.tmpdir() : os.tmpDir());
+};
+
 
 /**
  * NOTICE: this file was automatically converted from Coffeescript back to pure JavaScript.
@@ -36,318 +48,8 @@ describe('inject', function () {
 
 
     it('should create a container', function () {
-        assert.ok(container);
-    });
-
-    it('should return module without deps', function () {
-        var Abc = function () {
-            return 'abc';
-        };
-
-        container.register('abc', Abc);
-
-        assert.equal(container.get('abc'), 'abc');
-    });
-
-    it('should get a single dependency', function () {
-        var Stuff = function (names) {
-            return names[0];
-        };
-
-        var Names = function () {
-            return ['one', 'two'];
-        };
-
-        container.register('stuff', Stuff);
-        container.register('names', Names);
-
-        assert.equal(container.get('stuff'), 'one');
-    });
-
-    it('should resolve multiple dependencies', function () {
-        var post = function (Comments, Users) {
-            var Post;
-            return Post = (function () {
-                function Post(comments1, author) {
-                    this.comments = comments1;
-                    this.author = author;
-                }
-
-                Post.prototype.authorName = function () {
-                    return Users.getName(this.author);
-                };
-
-                Post.prototype.firstCommentText = function () {
-                    return Comments.getText(this.comments[0]);
-                };
-
-                return Post;
-            })();
-        };
-
-        var comments = function () {
-            return {
-                getText: function (obj) {
-                    return obj.text;
-                }
-            };
-        };
-
-        var users = function () {
-            return {
-                getName: function (obj) {
-                    return obj.name;
-                }
-            };
-        };
-
-        container.register('Post', post);
-        container.register('Users', users);
-        container.register('Comments', comments);
-
-        var PostClass = container.get('Post');
-
-        var apost = new PostClass([
-            {
-                text: 'woot'
-            }
-        ], {
-            name: 'bob'
-        });
-
-        assert.equal(apost.authorName(), 'bob');
-        assert.equal(apost.firstCommentText(), 'woot');
-    });
-
-    it('should let me use different databases for different collections (pass in info)', function () {
-        var db = function (data) {
-            return {
-                data: data,
-                get: function (key) {
-                    return this.data[key];
-                },
-                set: function (key, value) {
-                    return this.data[key] = value;
-                }
-            };
-        };
-
-        var name = function () {
-            return 'bob';
-        };
-
-        var people = function (name, db) {
-            return {
-                name: name,
-                add: function (person) {
-                    return db.set(person.name, person);
-                },
-                find: function (name) {
-                    return db.get(name);
-                }
-            };
-        };
-
-        var places = function (name, db) {
-            return {
-                name: name,
-                add: function (place) {
-                    return db.set(place.name, place);
-                },
-                find: function (name) {
-                    return db.get(name);
-                }
-            };
-        };
-
-        container.register('name', name);
-        container.register('people', people);
-        container.register('places', places);
-
-        var peopleDb = db({});
-        var placesDb = db({});
-        var peoplez = container.get('people', {
-            db: peopleDb
-        });
-        var placez = container.get('places', {
-            db: placesDb
-        });
-
-        assert.equal(peoplez.name, 'bob');
-        assert.equal(placez.name, 'bob');
-
-        peoplez.add({
-            name: 'one'
-        });
-        placez.add({
-            name: 'two'
-        });
-
-        assert.ok(peoplez.find('one'));
-        assert.ok(!placez.find('one'));
-        assert.ok(placez.find('two'));
-        assert.ok(!peoplez.find('two'));
-    });
-
-    it('should get nested dependencies', function () {
-        var gpa = function () {
-            return {
-                age: 86
-            };
-        };
-
-        var dad = function (gpa) {
-            return {
-                age: gpa.age - 20
-            };
-        };
-
-        var son = function (dad) {
-            return {
-                age: dad.age - 20
-            };
-        };
-
-        container.register('gpa', gpa);
-        container.register('dad', dad);
-        container.register('son', son);
-
-        var ason = container.get('son');
-
-        assert.equal(ason.age, 46);
-    });
-
-    it('should throw error on circular dependency', function () {
-        var one = function (two) {
-            return two + 1;
-        };
-
-        var two = function (one) {
-            return one + 2;
-        };
-
-        container.register('one', one);
-        container.register('two', two);
-
-        var err;
-        try {
-            container.get('one');
-        }
-        catch (e) {
-            err = e;
-        }
-
-        assert.ok(err.toString().match(/circular dependency/i));
-    });
-
-    it('should NOT throw circular dependency error if two modules require the same thing', function () {
-        container.register('name', function () {
-            return 'bob';
-        });
-        container.register('one', function (name) {
-            return name + ' one';
-        });
-        container.register('two', function (name) {
-            return name + ' two';
-        });
-        container.register('all', function (one, two) {
-            return one.name + ' ' + two.name;
-        });
-
-        try {
-            container.get('all');
-        }
-        catch (e) {
-            assert.ok(false, 'should not have thrown error');
-        }
-    });
-
-    it('should list dependencies registered', function () {
-        container.register('one', function (name) {
-            return name + ' one';
-        });
-        container.register('two', function (name) {
-            return name + ' two';
-        });
-
-        var list = container.list();
-
-        assert.equal(list.one.func('1'), '1 one');
-        assert.equal(list.two.func('2'), '2 two');
-    });
-
-    it('should throw error if it cant find dependency', function () {
-        var err;
-        try {
-            container.get('one');
-        }
-        catch (e) {
-            err = e;
-        }
-
-        assert.ok(err);
-    });
-
-    it('should throw error if it cant find dependency of dependency', function () {
-        container.register('one', function (two) {
-            return 'one';
-        });
-
-        var err;
-        try {
-            container.get('one');
-        }
-        catch (e) {
-            err = e;
-        }
-
-        assert.ok(err);
-    });
-
-    it('should let you get multiple dependencies at once, injector style', function (done) {
-        container.register('name', function () {
-            return 'bob';
-        });
-        container.register('one', function (name) {
-            return name + ' one';
-        });
-        container.register('two', function (name) {
-            return name + ' two';
-        });
-
-        container.resolve(function (one, two) {
-            assert.ok(one);
-            assert.ok(two);
-            assert.equal(one, 'bob one');
-            assert.equal(two, 'bob two');
-
-            done();
-        });
-    });
-
-    it('should return the SAME instance to everyone', function () {
-        container.register('asdf', function () {
-            return {
-                woot: 'hi'
-            };
-        });
-        container.register('a', function (asdf) {
-            asdf.a = 'a';
-        });
-        container.register('b', function (asdf) {
-            asdf.b = 'b';
-        });
-
-        var asdf = container.get('asdf');
-        var a = container.get('a');
-        var b = container.get('b');
-
-        assert.equal(asdf.a, 'a');
-        assert.equal(asdf.b, 'b');
-    });
-
-    it('should inject the container (_container)', function () {
-        assert.equal(container.get('_container'), container);
+        expect(container).to.be.ok;
+        expect(container).to.be.an('object');
     });
 
     describe('cache', function () {
@@ -441,64 +143,7 @@ describe('inject', function () {
         });
     });
 
-    describe('simple dependencies', function () {
-        it('doesnt have to be a function. objects work too', function () {
-            container.register('a', 'a');
 
-            assert.equal(container.get('a'), 'a');
-        });
-    });
-
-    describe('registering a hash', function () {
-        it('should register a hash of key : dep pairs', function () {
-            container.register({
-                a: 'a',
-                b: 'b'
-            });
-
-            assert.equal(container.get('a'), 'a');
-            assert.equal(container.get('b'), 'b');
-        });
-
-        it('should register a hash of key : dep (object, class) pairs', function () {
-            var depA = function () {
-                return 'foo bar';
-            };
-            var depB = {
-                foo: 'bar',
-                num: 123
-            };
-
-            container.register({
-                a: function () {
-                    return depA;
-                },
-                b: depB
-            });
-
-            assert.equal(container.get('a'), depA);
-            assert.equal(container.get('b'), depB);
-        });
-    });
-
-    describe('nested containers', function () {
-        it('should inherit deps from the parent');
-    });
-
-    describe('maybe', function () {
-        it('should support objects/data instead of functions?');
-        it('should support optional dependencies?');
-    });
-
-
-    /****************************************
-     * New improved test style:
-     * - first:  describe the testable method
-     * - second: check if method exists
-     * - third:  test behaviour
-     *
-     * @todo: convert old tests into new format
-     */
     describe('register()', function () {
         var depA, depB;
 
@@ -520,6 +165,12 @@ describe('inject', function () {
         });
 
         describe('type "string" and "object"', function () {
+            it('should register a string dependency', function () {
+                container.register('a', 'a');
+
+                expect(container.get('a')).to.equal('a');
+            });
+
             it('should register a dependency', function () {
                 container.register('depA', depA);
                 container.register('depB', depB);
@@ -530,7 +181,7 @@ describe('inject', function () {
                 expect(container.get('depB')).to.not.equal(depA);
             });
 
-            it('should register a dependency via hash', function () {
+            it('should register dependencies via object', function () {
                 container.register({
                     depA: depA,
                     depB: depB
@@ -540,6 +191,28 @@ describe('inject', function () {
                 expect(container.get('depA')).to.not.equal(depB);
                 expect(container.get('depB')).to.equal(depB);
                 expect(container.get('depB')).to.not.equal(depA);
+            });
+
+            it('should register dependencies via object with object/class pairs', function () {
+                var depA = function () {
+                    return 'foo bar';
+                };
+                var depB = {
+                    foo: 'bar',
+                    num: 123
+                };
+
+                container.register({
+                    a: function () {
+                        return depA;
+                    },
+                    b: depB
+                });
+
+                expect(container.get('a')).to.equal(depA);
+                expect(container.get('a')).to.not.equal(depB);
+                expect(container.get('b')).to.equal(depB);
+                expect(container.get('b')).to.not.equal(depA);
             });
         });
 
@@ -594,7 +267,7 @@ describe('inject', function () {
                 expect(container.get('depFnc4')).to.equal(result4);
             });
 
-            it('should register a dependency via hash', function () {
+            it('should register a dependencies via object', function () {
                 container.register({
                     depFnc1: depFnc1,
                     depFnc2: depFnc2,
@@ -624,87 +297,257 @@ describe('inject', function () {
             });
         });
 
-        // NOTICE: enable this only if support for Node.js < v4 will be dropped!
-        // describe('type "function" (ES6)', function () {
-        //     var depFnc1, depFnc2, depFnc3, depFnc4;
-        //     var result1, result2, result3, result4;
+        describe('type "function" (ES6 fat arrow)', function () {
+            var depFnc1, depFnc2, depFnc3, depFnc4;
+            var result1, result2, result3, result4;
 
-        //     beforeEach(function () {
-        //         depFnc1 = () => {
-        //             return 'foo';
-        //         };
-        //         depFnc2 = ()=>{
-        //             return 'bar';
-        //         };
-        //         depFnc3 = (depFnc1,depFnc2)=>{ // no whitespace between args
-        //             return depFnc1 + ' ' + depFnc2;
-        //         };
-        //         depFnc4 = (   depFnc1,    depFnc2   )     =>    { // with whitespace between args
-        //             return depFnc2 + ' ' + depFnc1;
-        //         };
+            beforeEach(function () {
+                if (!features.hasFatArrow) {
+                    this.skip();
+                }
 
-        //         result1 = 'foo';
-        //         result2 = 'bar';
-        //         result3 = 'foo bar';
-        //         result4 = 'bar foo';
-        //     });
+                depFnc1 = eval('() => "foo";');
+                depFnc2 = eval('() => "bar";');
+                // no whitespace between args
+                depFnc3 = eval('(depFnc1,depFnc2) => depFnc1 + " " + depFnc2;');
+                // with whitespace between args
+                depFnc4 = eval('(   depFnc1,\tdepFnc2   ) => {\nreturn depFnc2 + " " + depFnc1;\n}\n');
 
-        //     it('should register a dependency', function () {
-        //         container.register('depFnc1', depFnc1);
-        //         container.register('depFnc2', depFnc2);
-        //         container.register('depFnc3', depFnc3);
-        //         container.register('depFnc4', depFnc4);
+                result1 = 'foo';
+                result2 = 'bar';
+                result3 = 'foo bar';
+                result4 = 'bar foo';
+            });
 
-        //         expect(container.get('depFnc1')).to.equal(result1);
-        //         expect(container.get('depFnc1')).to.not.equal(result2);
-        //         expect(container.get('depFnc1')).to.not.equal(result3);
-        //         expect(container.get('depFnc1')).to.not.equal(result4);
+            it('should register a dependency', function () {
+                container.register('depFnc1', depFnc1);
+                container.register('depFnc2', depFnc2);
+                container.register('depFnc3', depFnc3);
+                container.register('depFnc4', depFnc4);
 
-        //         expect(container.get('depFnc2')).to.not.equal(result1);
-        //         expect(container.get('depFnc2')).to.equal(result2);
-        //         expect(container.get('depFnc2')).to.not.equal(result3);
-        //         expect(container.get('depFnc2')).to.not.equal(result4);
+                expect(container.get('depFnc1')).to.equal(result1);
+                expect(container.get('depFnc1')).to.not.equal(result2);
+                expect(container.get('depFnc1')).to.not.equal(result3);
+                expect(container.get('depFnc1')).to.not.equal(result4);
 
-        //         expect(container.get('depFnc3')).to.not.equal(result1);
-        //         expect(container.get('depFnc3')).to.not.equal(result2);
-        //         expect(container.get('depFnc3')).to.equal(result3);
-        //         expect(container.get('depFnc3')).to.not.equal(result4);
+                expect(container.get('depFnc2')).to.not.equal(result1);
+                expect(container.get('depFnc2')).to.equal(result2);
+                expect(container.get('depFnc2')).to.not.equal(result3);
+                expect(container.get('depFnc2')).to.not.equal(result4);
 
-        //         expect(container.get('depFnc4')).to.not.equal(result1);
-        //         expect(container.get('depFnc4')).to.not.equal(result2);
-        //         expect(container.get('depFnc4')).to.not.equal(result3);
-        //         expect(container.get('depFnc4')).to.equal(result4);
-        //     });
+                expect(container.get('depFnc3')).to.not.equal(result1);
+                expect(container.get('depFnc3')).to.not.equal(result2);
+                expect(container.get('depFnc3')).to.equal(result3);
+                expect(container.get('depFnc3')).to.not.equal(result4);
 
-        //     it('should register a dependency via hash', function () {
-        //         container.register({
-        //             depFnc1: depFnc1,
-        //             depFnc2: depFnc2,
-        //             depFnc3: depFnc3,
-        //             depFnc4: depFnc4,
-        //         });
+                expect(container.get('depFnc4')).to.not.equal(result1);
+                expect(container.get('depFnc4')).to.not.equal(result2);
+                expect(container.get('depFnc4')).to.not.equal(result3);
+                expect(container.get('depFnc4')).to.equal(result4);
+            });
 
-        //         expect(container.get('depFnc1')).to.equal(result1);
-        //         expect(container.get('depFnc1')).to.not.equal(result2);
-        //         expect(container.get('depFnc1')).to.not.equal(result3);
-        //         expect(container.get('depFnc1')).to.not.equal(result4);
+            it('should register a dependencies via object', function () {
+                container.register({
+                    depFnc1: depFnc1,
+                    depFnc2: depFnc2,
+                    depFnc3: depFnc3,
+                    depFnc4: depFnc4,
+                });
 
-        //         expect(container.get('depFnc2')).to.not.equal(result1);
-        //         expect(container.get('depFnc2')).to.equal(result2);
-        //         expect(container.get('depFnc2')).to.not.equal(result3);
-        //         expect(container.get('depFnc2')).to.not.equal(result4);
+                expect(container.get('depFnc1')).to.equal(result1);
+                expect(container.get('depFnc1')).to.not.equal(result2);
+                expect(container.get('depFnc1')).to.not.equal(result3);
+                expect(container.get('depFnc1')).to.not.equal(result4);
 
-        //         expect(container.get('depFnc3')).to.not.equal(result1);
-        //         expect(container.get('depFnc3')).to.not.equal(result2);
-        //         expect(container.get('depFnc3')).to.equal(result3);
-        //         expect(container.get('depFnc3')).to.not.equal(result4);
+                expect(container.get('depFnc2')).to.not.equal(result1);
+                expect(container.get('depFnc2')).to.equal(result2);
+                expect(container.get('depFnc2')).to.not.equal(result3);
+                expect(container.get('depFnc2')).to.not.equal(result4);
 
-        //         expect(container.get('depFnc4')).to.not.equal(result1);
-        //         expect(container.get('depFnc4')).to.not.equal(result2);
-        //         expect(container.get('depFnc4')).to.not.equal(result3);
-        //         expect(container.get('depFnc4')).to.equal(result4);
-        //     });
-        // });
+                expect(container.get('depFnc3')).to.not.equal(result1);
+                expect(container.get('depFnc3')).to.not.equal(result2);
+                expect(container.get('depFnc3')).to.equal(result3);
+                expect(container.get('depFnc3')).to.not.equal(result4);
+
+                expect(container.get('depFnc4')).to.not.equal(result1);
+                expect(container.get('depFnc4')).to.not.equal(result2);
+                expect(container.get('depFnc4')).to.not.equal(result3);
+                expect(container.get('depFnc4')).to.equal(result4);
+            });
+        });
+
+        describe('check regex to receive dependencies', function () {
+            it('should read dependencies from a multi line function (no spaces after function name)', function (done) {
+                var afile = path.join(getTempDir(), 'AA1.js');
+                var acode = 'module.exports = function() {\nreturn "a";\n}\n';
+                testFiles.push(afile);
+
+                var bfile = path.join(getTempDir(), 'BB1.js');
+                var bcode = 'module.exports = function(\nAA1\n) {\nreturn AA1 + "b";\n}\n';
+                testFiles.push(bfile);
+
+                fs.writeFile(afile, acode, function (err) {
+                    assert.ifError(err);
+
+                    container.load(afile);
+
+                    var a = container.get('AA1');
+                    assert.equal(a, 'a');
+
+                    fs.writeFile(bfile, bcode, function (err) {
+                        assert.ifError(err);
+
+                        container.load(bfile);
+                        var b = container.get('BB1');
+                        assert.equal(b, 'ab');
+
+                        done();
+                    });
+                });
+            });
+
+            it('should read dependencies from a multi line function (spaces after function name)', function (done) {
+                var afile = path.join(getTempDir(), 'AA1.js');
+                var acode = 'module.exports = function () {\nreturn "a";\n}\n';
+                testFiles.push(afile);
+
+                var bfile = path.join(getTempDir(), 'BB1.js');
+                var bcode = 'module.exports = function (\nAA1\n) {\nreturn AA1 + "b";\n}\n';
+                testFiles.push(bfile);
+
+                fs.writeFile(afile, acode, function (err) {
+                    assert.ifError(err);
+
+                    container.load(afile);
+
+                    var a = container.get('AA1');
+                    assert.equal(a, 'a');
+
+                    fs.writeFile(bfile, bcode, function (err) {
+                        assert.ifError(err);
+
+                        container.load(bfile);
+                        var b = container.get('BB1');
+                        assert.equal(b, 'ab');
+
+                        done();
+                    });
+                });
+            });
+
+            it('should read dependencies from a multi line ES6 fat arrow function', function (done) {
+                if (!features.hasFatArrow) {
+                    this.skip();
+                }
+
+                var afile = path.join(getTempDir(), 'AA1.js');
+                var acode = 'module.exports = () => {\nreturn "a";\n}\n';
+                testFiles.push(afile);
+
+                var bfile = path.join(getTempDir(), 'BB1.js');
+                var bcode = 'module.exports = (\nAA1\n) => {\nreturn AA1 + "b";\n}\n';
+                testFiles.push(bfile);
+
+                fs.writeFile(afile, acode, function (err) {
+                    assert.ifError(err);
+
+                    container.load(afile);
+
+                    var a = container.get('AA1');
+                    assert.equal(a, 'a');
+
+                    fs.writeFile(bfile, bcode, function (err) {
+                        assert.ifError(err);
+
+                        container.load(bfile);
+                        var b = container.get('BB1');
+                        assert.equal(b, 'ab');
+
+                        done();
+                    });
+                });
+            });
+
+            it('should read dependencies from a multi line ES6 fat arrow function short syntax', function (done) {
+                if (!features.hasFatArrow) {
+                    this.skip();
+                }
+
+                var afile = path.join(getTempDir(), 'AA1.js');
+                var acode = 'module.exports = () => "a";\n';
+                testFiles.push(afile);
+
+                var bfile = path.join(getTempDir(), 'BB1.js');
+                var bcode = 'module.exports = (\nAA1\n) => AA1 + "b";\n';
+                testFiles.push(bfile);
+
+                fs.writeFile(afile, acode, function (err) {
+                    assert.ifError(err);
+
+                    container.load(afile);
+
+                    var a = container.get('AA1');
+                    assert.equal(a, 'a');
+
+                    fs.writeFile(bfile, bcode, function (err) {
+                        assert.ifError(err);
+
+                        container.load(bfile);
+                        var b = container.get('BB1');
+                        assert.equal(b, 'ab');
+
+                        done();
+                    });
+                });
+            });
+        });
+
+        describe('force exception in method "argList()"', function () {
+            it('should throw an exception', function () {
+                var depA = function () {
+                    return 'foo';
+                };
+
+                depA.toString = function () {
+                    return 'some weird result';
+                };
+
+                var status = true;
+                var statusMessage;
+
+                try {
+                    container.register('depA', depA);
+
+                    status = false;
+                    statusMessage = 'It should thrown an exception to be not able to parse a method\'s signature';
+                } catch (ex) {}
+
+                assert.ok(status, statusMessage);
+            });
+        });
+
+        describe('check behaviour', function () {
+            it('should return the same instance to everyone', function () {
+                container.register('asdf', function () {
+                    return {
+                        woot: 'hi'
+                    };
+                });
+                container.register('a', function (asdf) {
+                    asdf.a = 'a';
+                });
+                container.register('b', function (asdf) {
+                    asdf.b = 'b';
+                });
+
+                var asdf = container.get('asdf');
+                var a = container.get('a');
+                var b = container.get('b');
+
+                expect(asdf.a).to.equal('a');
+                expect(asdf.b).to.equal('b');
+            });
+        });
     });
 
     describe('registerLibrary()', function () {
@@ -785,11 +628,11 @@ describe('inject', function () {
     describe('load()', function () {
         describe('use method without options', function () {
             it('should let you register a file', function (done) {
-                var afile = path.join(os.tmpDir(), 'A1.js');
+                var afile = path.join(getTempDir(), 'A1.js');
                 var acode = 'module.exports = function() { return "a" }';
                 testFiles.push(afile);
 
-                var bfile = path.join(os.tmpDir(), 'B1.js');
+                var bfile = path.join(getTempDir(), 'B1.js');
                 var bcode = 'module.exports = function(A1) { return A1 + "b" }';
                 testFiles.push(bfile);
 
@@ -814,7 +657,7 @@ describe('inject', function () {
             });
 
             it('should let you register a whole directory', function (done) {
-                var dir = path.join(os.tmpDir(), 'testinject');
+                var dir = path.join(getTempDir(), 'testinject');
 
                 var afile = path.join(dir, 'A2.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -842,15 +685,71 @@ describe('inject', function () {
                 });
             });
 
-            it('should let you load a file without an extension');
+            it('should let you load a file without an extension', function (done) {
+                var removeFileExtension = function (str) {
+                    return str.replace('.js', '');
+                };
 
-            it('should load a folder with a file with parse errors without accidentally trying to load the folder as a file');
+                var afile = path.join(getTempDir(), 'A1.js');
+                var acode = 'module.exports = function() { return "a" }';
+                testFiles.push(afile);
 
-            it('should not crash if trying to load something as a file without an extension (crashed on fs.stat)');
+                var bfile = path.join(getTempDir(), 'B1.js');
+                var bcode = 'module.exports = function(A1) { return A1 + "b" }';
+                testFiles.push(bfile);
+
+                fs.writeFile(afile, acode, function (err) {
+                    assert.ifError(err);
+
+                    container.load(removeFileExtension(afile));
+
+                    var a = container.get('A1');
+                    assert.equal(a, 'a');
+
+                    fs.writeFile(bfile, bcode, function (err) {
+                        assert.ifError(err);
+
+                        container.load(removeFileExtension(bfile));
+                        var b = container.get('B1');
+                        assert.equal(b, 'ab');
+
+                        done();
+                    });
+                });
+            });
+
+            it('should not crash if trying to load something as a file without an extension (crashed on fs.stat)', function (done) {
+                var afile = path.join(getTempDir(), 'A1');
+                var acode = 'module.exports = function() { return "a" }';
+                testFiles.push(afile);
+
+                var bfile = path.join(getTempDir(), 'B1');
+                var bcode = 'module.exports = function(A1) { return A1 + "b" }';
+                testFiles.push(bfile);
+
+                fs.writeFile(afile, acode, function (err) {
+                    assert.ifError(err);
+
+                    container.load(afile);
+
+                    var a = container.get('A1');
+                    assert.equal(a, 'a');
+
+                    fs.writeFile(bfile, bcode, function (err) {
+                        assert.ifError(err);
+
+                        container.load(bfile);
+                        var b = container.get('B1');
+                        assert.equal(b, 'ab');
+
+                        done();
+                    });
+                });
+            });
 
             // NOTICE: this test does not work. We need to load every module to read the module's dependencies!
             xit('should be lazy', function (done) {
-                var dir = path.join(os.tmpDir(), 'testinject');
+                var dir = path.join(getTempDir(), 'testinject');
 
                 var cfile = path.join(dir, 'C.js');
                 var ccode = 'throw new Error("Should not be loaded because we do not require it");';
@@ -887,11 +786,11 @@ describe('inject', function () {
             });
 
             it('should let you register a file', function (done) {
-                var afile = path.join(os.tmpDir(), 'A3.js');
+                var afile = path.join(getTempDir(), 'A3.js');
                 var acode = 'module.exports = function() { return "a" }';
                 testFiles.push(afile);
 
-                var bfile = path.join(os.tmpDir(), 'B3.js');
+                var bfile = path.join(getTempDir(), 'B3.js');
                 var bcode = 'module.exports = function(Test_A3) { return Test_A3 + "b" }';
                 testFiles.push(bfile);
 
@@ -916,7 +815,7 @@ describe('inject', function () {
             });
 
             it('should let you register a whole directory', function (done) {
-                var dir = path.join(os.tmpDir(), 'testinject');
+                var dir = path.join(getTempDir(), 'testinject');
 
                 var afile = path.join(dir, 'A4.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -955,11 +854,11 @@ describe('inject', function () {
             });
 
             it('should let you register a file', function (done) {
-                var afile = path.join(os.tmpDir(), 'A32.js');
+                var afile = path.join(getTempDir(), 'A32.js');
                 var acode = 'module.exports = function() { return "a" }';
                 testFiles.push(afile);
 
-                var bfile = path.join(os.tmpDir(), 'B32.js');
+                var bfile = path.join(getTempDir(), 'B32.js');
                 var bcode = 'module.exports = function(A32_Test) { return A32_Test + "b" }';
                 testFiles.push(bfile);
 
@@ -984,7 +883,7 @@ describe('inject', function () {
             });
 
             it('should let you register a whole directory', function (done) {
-                var dir = path.join(os.tmpDir(), 'testinject');
+                var dir = path.join(getTempDir(), 'testinject');
 
                 var afile = path.join(dir, 'A42.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -1023,7 +922,7 @@ describe('inject', function () {
             });
 
             it('should let you register a file', function (done) {
-                var baseDir = os.tmpDir() + '/';
+                var baseDir = getTempDir() + '/';
 
                 var afile = path.join(baseDir, 'A5.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -1056,7 +955,7 @@ describe('inject', function () {
             });
 
             it('should let you register a whole directory', function (done) {
-                var dir = path.join(os.tmpDir(), 'testinject/');
+                var dir = path.join(getTempDir(), 'testinject/');
 
                 var afile = path.join(dir, 'A6.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -1100,7 +999,7 @@ describe('inject', function () {
             });
 
             it('should let you register a file', function (done) {
-                var baseDir = os.tmpDir() + '/';
+                var baseDir = getTempDir() + '/';
 
                 var afile = path.join(baseDir, 'A7.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -1133,7 +1032,7 @@ describe('inject', function () {
             });
 
             it('should let you register a whole directory', function (done) {
-                var dir = path.join(os.tmpDir(), 'testinject/');
+                var dir = path.join(getTempDir(), 'testinject/');
 
                 var afile = path.join(dir, 'A8.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -1177,7 +1076,7 @@ describe('inject', function () {
             });
 
             it('should let you register a file', function (done) {
-                var baseDir = os.tmpDir() + '/';
+                var baseDir = getTempDir() + '/';
 
                 var afile = path.join(baseDir, 'A9.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -1210,7 +1109,7 @@ describe('inject', function () {
             });
 
             it('should let you register a whole directory', function (done) {
-                var dir = path.join(os.tmpDir(), 'testinject/');
+                var dir = path.join(getTempDir(), 'testinject/');
 
                 var afile = path.join(dir, 'A10.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -1234,68 +1133,6 @@ describe('inject', function () {
 
                             done();
                         });
-                    });
-                });
-            });
-        });
-    });
-
-    describe('register()', function () {
-        describe('check regex to receive dependencies', function () {
-            it('should read dependencies from a multi line function', function (done) {
-                var afile = path.join(os.tmpDir(), 'AA1.js');
-                var acode = 'module.exports = function() {\nreturn "a";\n}\n';
-                testFiles.push(afile);
-
-                var bfile = path.join(os.tmpDir(), 'BB1.js');
-                var bcode = 'module.exports = function(\nAA1\n) {\nreturn AA1 + "b";\n}\n';
-                testFiles.push(bfile);
-
-                fs.writeFile(afile, acode, function (err) {
-                    assert.ifError(err);
-
-                    container.load(afile);
-
-                    var a = container.get('AA1');
-                    assert.equal(a, 'a');
-
-                    fs.writeFile(bfile, bcode, function (err) {
-                        assert.ifError(err);
-
-                        container.load(bfile);
-                        var b = container.get('BB1');
-                        assert.equal(b, 'ab');
-
-                        done();
-                    });
-                });
-            });
-
-            it('should read dependencies from a multi line ES6 fat arrow function', function (done) {
-                var afile = path.join(os.tmpDir(), 'AA1.js');
-                var acode = 'module.exports = () => {\nreturn "a";\n}\n';
-                testFiles.push(afile);
-
-                var bfile = path.join(os.tmpDir(), 'BB1.js');
-                var bcode = 'module.exports = (\nAA1\n) => {\nreturn AA1 + "b";\n}\n';
-                testFiles.push(bfile);
-
-                fs.writeFile(afile, acode, function (err) {
-                    assert.ifError(err);
-
-                    container.load(afile);
-
-                    var a = container.get('AA1');
-                    assert.equal(a, 'a');
-
-                    fs.writeFile(bfile, bcode, function (err) {
-                        assert.ifError(err);
-
-                        container.load(bfile);
-                        var b = container.get('BB1');
-                        assert.equal(b, 'ab');
-
-                        done();
                     });
                 });
             });
@@ -1435,6 +1272,391 @@ describe('inject', function () {
             expect(dependencies).to.be.ok;
             expect(dependencies).to.be.an('object');
             expect(Object.keys(dependencies)).to.have.length(0);
+        });
+    });
+
+    describe('get()', function () {
+        it('should exist', function () {
+            expect(container.get).to.be.ok;
+            expect(container.get).to.be.a('function');
+        });
+
+        it('should return module without deps', function () {
+            var Abc = function () {
+                return 'abc';
+            };
+
+            container.register('abc', Abc);
+
+            expect(container.get('abc')).to.equal('abc');
+        });
+
+        it('should get a single dependency', function () {
+            var Stuff = function (names) {
+                return names[0];
+            };
+
+            var Names = function () {
+                return ['one', 'two'];
+            };
+
+            container.register('stuff', Stuff);
+            container.register('names', Names);
+
+            expect(container.get('stuff')).to.equal('one');
+        });
+
+        it('should resolve multiple dependencies', function () {
+            var post = function (Comments, Users) {
+                var Post;
+
+                return Post = (function () {
+                    function Post(comments1, author) {
+                        this.comments = comments1;
+                        this.author = author;
+                    }
+
+                    Post.prototype.authorName = function () {
+                        return Users.getName(this.author);
+                    };
+
+                    Post.prototype.firstCommentText = function () {
+                        return Comments.getText(this.comments[0]);
+                    };
+
+                    return Post;
+                })();
+            };
+
+            var comments = function () {
+                return {
+                    getText: function (obj) {
+                        return obj.text;
+                    }
+                };
+            };
+
+            var users = function () {
+                return {
+                    getName: function (obj) {
+                        return obj.name;
+                    }
+                };
+            };
+
+            container.register('Post', post);
+            container.register('Users', users);
+            container.register('Comments', comments);
+
+            var PostClass = container.get('Post');
+
+            var postOne = new PostClass(
+                [
+                    {text: 'woot'}
+                ],
+                {
+                    name: 'bob'
+                }
+            );
+
+            expect(postOne.authorName()).to.be.ok;
+            expect(postOne.authorName()).to.equal('bob');
+            expect(postOne.firstCommentText()).to.be.ok;
+            expect(postOne.firstCommentText()).to.equal('woot');
+
+
+            var postTwo = new PostClass(
+                [
+                    {text: 'some text'},
+                    {text: 'another comment'}
+                ],
+                {
+                    name: 'alice'
+                }
+            );
+
+            expect(postTwo.authorName()).to.be.ok;
+            expect(postTwo.authorName()).to.equal('alice');
+            expect(postTwo.firstCommentText()).to.be.ok;
+            expect(postTwo.firstCommentText()).to.equal('some text');
+        });
+
+        it('should let me use different databases for different collections (pass in info)', function () {
+            var db = function (data) {
+                return {
+                    data: data,
+                    get: function (key) {
+                        return this.data[key];
+                    },
+                    set: function (key, value) {
+                        return this.data[key] = value;
+                    }
+                };
+            };
+
+            var name = function () {
+                return 'bob';
+            };
+
+            var people = function (name, db) {
+                return {
+                    name: name,
+                    add: function (person) {
+                        return db.set(person.name, person);
+                    },
+                    find: function (name) {
+                        return db.get(name);
+                    }
+                };
+            };
+
+            var places = function (name, db) {
+                return {
+                    name: name,
+                    add: function (place) {
+                        return db.set(place.name, place);
+                    },
+                    find: function (name) {
+                        return db.get(name);
+                    }
+                };
+            };
+
+            container.register('name', name);
+            container.register('people', people);
+            container.register('places', places);
+
+            var peopleDb = db({});
+            var placesDb = db({});
+            var peoplez = container.get('people', {
+                db: peopleDb
+            });
+            var placez = container.get('places', {
+                db: placesDb
+            });
+
+            expect(peoplez.name, 'bob');
+            expect(placez.name, 'bob');
+
+            peoplez.add({
+                name: 'one'
+            });
+            placez.add({
+                name: 'two'
+            });
+
+            expect(peoplez.find('one')).to.be.ok;
+            expect(placez.find('one')).to.be.not.ok;
+
+            expect(peoplez.find('two')).to.be.not.ok;
+            expect(placez.find('two')).to.be.ok;
+        });
+
+        it('should get nested dependencies', function () {
+            var gpa = function () {
+                return {
+                    age: 86
+                };
+            };
+
+            var dad = function (gpa) {
+                return {
+                    age: gpa.age - 20
+                };
+            };
+
+            var son = function (dad) {
+                return {
+                    age: dad.age - 30
+                };
+            };
+
+            container.register('gpa', gpa);
+            container.register('dad', dad);
+            container.register('son', son);
+
+            expect(container.get('gpa').age).to.equal(86);
+            expect(container.get('dad').age).to.equal(66);
+            expect(container.get('son').age).to.equal(36);
+        });
+
+        it('should throw error on circular dependency', function () {
+            var one = function (two) {
+                return two + 1;
+            };
+
+            var two = function (one) {
+                return one + 2;
+            };
+
+            container.register('one', one);
+            container.register('two', two);
+
+            var err;
+            try {
+                container.get('one');
+            }
+            catch (e) {
+                err = e;
+            }
+
+            assert.ok(err.toString().match(/circular dependency/i));
+        });
+
+        it('should not throw circular dependency error if two modules require the same thing', function () {
+            container.register('name', function () {
+                return 'bob';
+            });
+            container.register('one', function (name) {
+                return name + ' one';
+            });
+            container.register('two', function (name) {
+                return name + ' two';
+            });
+            container.register('all', function (one, two) {
+                return one + ' ' + two;
+            });
+
+            try {
+                var result = container.get('all');
+
+                expect(result).to.be.ok;
+                expect(result).to.equal('bob one bob two');
+            }
+            catch (err) {
+                assert.ok(false, 'Should not have thrown error: ' + err.message);
+            }
+        });
+
+        it('should throw error if it cant find dependency', function () {
+            var err;
+            try {
+                container.get('one');
+            }
+            catch (e) {
+                err = e;
+            }
+
+            expect(err).to.be.ok;
+            expect(err.message).to.equal('Dependency "one" was not registered');
+        });
+
+        it('should throw error if it cant find dependency of dependency', function () {
+            container.register('one', function (two) {
+                return 'one';
+            });
+
+            var err;
+            try {
+                container.get('one');
+            }
+            catch (e) {
+                err = e;
+            }
+
+            expect(err).to.be.ok;
+            expect(err.message).to.equal('Dependency "two" was not registered');
+        });
+
+        it('should inject the container (_container)', function () {
+            assert.equal(container.get('_container'), container);
+        });
+    });
+
+    describe('resolve()', function () {
+        it('should exist', function () {
+            expect(container.resolve).to.be.ok;
+            expect(container.resolve).to.be.a('function');
+        });
+
+        it('should let you get multiple dependencies at once, injector style', function (done) {
+            container.register('name', function () {
+                return 'bob';
+            });
+            container.register('one', function (name) {
+                return name + ' one';
+            });
+            container.register('two', function (name) {
+                return name + ' two';
+            });
+
+            container.resolve(function (one, two) {
+                assert.ok(one);
+                assert.ok(two);
+                assert.equal(one, 'bob one');
+                assert.equal(two, 'bob two');
+
+                expect(one).to.be.ok;
+                expect(two).to.be.ok;
+
+                expect(one).to.equal('bob one');
+                expect(two).to.equal('bob two');
+
+                done();
+            });
+        });
+    });
+
+    describe('list()', function () {
+        it('should exist', function () {
+            expect(container.list).to.be.ok;
+            expect(container.list).to.be.a('function');
+        });
+
+        it('should list dependencies registered', function () {
+            container.register('one', function (name) {
+                return name + ' one';
+            });
+            container.register('two', function (name) {
+                return name + ' two';
+            });
+
+            var list = container.list();
+
+            expect(list.one.func('1')).to.equal('1 one');
+            expect(list.two.func('2')).to.equal('2 two');
+        });
+    });
+
+    describe('clearAll()', function () {
+        /**
+         * Get a object list's length.
+         *
+         * @param {object} list
+         *
+         * @return {number}
+         */
+        var listLength = function (list) {
+            return Object.keys(list).length;
+        };
+
+        it('should exist', function () {
+            expect(container.clearAll).to.be.ok;
+            expect(container.clearAll).to.be.a('function');
+        });
+
+        it('should do nothing on a initial empty container', function () {
+            // NOTICE: there is always one element in the container: the container itself under the key "_container".
+            expect(listLength(container.list())).to.be.equal(1);
+
+            container.clearAll();
+
+            expect(listLength(container.list())).to.be.equal(1);
+        });
+
+        it('should clear the container', function () {
+            container.register('foo', 'bar');
+            container.register('num', 124);
+            container.register('bool', true);
+            container.register('fnc', function () {
+                return 'text';
+            });
+
+            expect(listLength(container.list())).to.be.not.equal(1);
+
+            container.clearAll();
+
+            expect(listLength(container.list())).to.be.equal(1);
         });
     });
 });

@@ -47,6 +47,29 @@ exports.container = function () {
 
 
     /**
+     * Get a file's or directory's statistics.
+     *
+     * @param {string}      fileOrPath
+     * @param {string|null} [fileEnding=null] Append this optional file ending to "fileOrPath". Default: no file ending.
+     *
+     * @return {fs.Stats|object}
+     */
+    var getFileStats = function (fileOrPath, fileEnding) {
+        var hasFileEnding = (typeof fileEnding === 'string');
+
+        try {
+            return fs.lstatSync(fileOrPath + (hasFileEnding ? fileEnding : ''));
+        } catch (ex) {
+            if (!hasFileEnding && ex.message.indexOf('no such file') !== -1) {
+                // Call this method again, but this time assume the target is a file, but the file ending is missing.
+                return getFileStats(fileOrPath, '.js');
+            }
+
+            throw ex;
+        }
+    };
+
+    /**
      * Register a dependency in the di-container.
      *
      * @param {string|object} name Register a dependency by its name (+ function) or a hash-set at once.
@@ -269,8 +292,10 @@ exports.container = function () {
             }
         }
 
+        var fileStats = getFileStats(fileOrDir);
+
         // Load a directory
-        if (fs.statSync(fileOrDir).isDirectory()) {
+        if (fileStats.isDirectory()) {
             var results = loadDir(fileOrDir, options);
 
             // Load a subdirectory
