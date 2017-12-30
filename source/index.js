@@ -101,8 +101,7 @@ exports.container = function () {
             }
 
             return results;
-        }
-        else {
+        } else {
             return registerOne(name, func);
         }
     };
@@ -152,8 +151,7 @@ exports.container = function () {
             }
 
             return results;
-        }
-        else {
+        } else {
             return registerOne(name, function () {
                 return func;
             });
@@ -391,8 +389,7 @@ exports.container = function () {
                 func: func,
                 required: argList(func)
             };
-        }
-        else {
+        } else {
             return {
                 func: function () {
                     return func;
@@ -486,8 +483,7 @@ exports.container = function () {
             if (module) {
                 register(name, require(module));
                 factory = factories[name];
-            }
-            else {
+            } else {
                 throw new Error('Dependency "' + name + '" was not registered');
             }
         }
@@ -501,8 +497,7 @@ exports.container = function () {
         var dependencies = factory.required.map(function (name) {
             if (overrides && overrides[name]) {
                 return overrides[name];
-            }
-            else {
+            } else {
                 return get(name, overrides, visited);
             }
         });

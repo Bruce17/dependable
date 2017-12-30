@@ -129,8 +129,7 @@ exports.simpleCompare = function simpleCompare(a, b) {
 
     if (this.isObject(a) && this.isObject(b)) {
         result = (JSON.stringify(a) === JSON.stringify(b));
-    }
-    else {
+    } else {
         result = (a === b);
     }
 
@@ -157,5 +156,5 @@ exports.escapeRegex = function escapeRegex(string) {
     return (escapeString && regexInst.escape.test(escapeString)) ?
         escapeString.replace(regex.escape, '\\$&') :
         escapeString
-    ;
+        ;
 };
