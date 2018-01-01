@@ -386,7 +386,6 @@ exports.container = function () {
 
         var results = [];
         var file;
-        var stats;
 
         for (var i = 0, iMax = files.length; i < iMax; i++) {
             file = files[i];
@@ -395,14 +394,12 @@ exports.container = function () {
                 continue;
             }
 
-            stats = fs.statSync(file);
-            if (stats.isFile()) {
+            if (getFileStats(file).isFile()) {
                 results.push(loadFile(file, options));
+            } else {
+                console.debug('loadDir(): no recursive directory loading at the moment');
+                //results.concat(loadDir(file, options));
             }
-            //TODO: erm ... useless!?
-            //else {
-            //    results.push(void 0);
-            //}
         }
 
         return results;

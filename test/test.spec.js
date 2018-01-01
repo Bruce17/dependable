@@ -1102,6 +1102,45 @@ describe('inject', function () {
                     });
                 })
             });
+
+            describe('should let you register a whole directory, but sub-directory accidentally contains a script file\'s ending', function () {
+                var aryFileEndings = [
+                    '.js',
+                    '.coffee'
+                ];
+
+                aryFileEndings.forEach(function (fileEnding) {
+                    it('*' + fileEnding, function (done) {
+                        var dir = path.join(getTempDir(), 'testinject/');
+                        subDirs[0] = 'fake-folder' + fileEnding;
+
+                        var afile = path.join(dir, 'A9.js');
+                        var acode = 'module.exports = function() { return "a" }';
+                        testFiles.push(afile);
+
+                        var bfile = path.join(dir + subDirs[0], 'B9.js');
+                        var bcode = 'module.exports = function(A9) { return A9 + "b" }';
+                        testFiles.push(bfile);
+
+                        fs.mkdir(dir + subDirs[0], function (err) {
+                            fs.writeFile(afile, acode, function (err) {
+                                assert.ifError(err);
+
+                                fs.writeFile(bfile, bcode, function (err) {
+                                    assert.ifError(err);
+
+                                    container.load(dir, subDirs);
+
+                                    var b = container.get('B9');
+                                    assert.equal(b, 'ab');
+
+                                    done();
+                                });
+                            });
+                        });
+                    });
+                });
+            });
         });
 
         describe('test sub directory and prefix option', function () {
