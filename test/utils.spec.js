@@ -8,6 +8,23 @@ var Utils = require('../source/utils');
 
 /* global expect */
 
+
+/**
+ * Return a string representation of a value for debugging purposes.
+ *
+ * @param {mixed} val
+ *
+ * @return {string}
+ */
+var valueToString = function valueToString(val) {
+    if (Utils.isArray(val)) {
+        return 'array';
+    } else {
+        return String(val);
+    }
+};
+
+
 describe('Utils', function () {
     it('should exist', function () {
         expect(Utils).to.be.ok;
@@ -248,6 +265,27 @@ describe('Utils', function () {
                 expect(Utils.inArray(collection, val)).to.be.false;
             });
         });
+
+        describe('should return false, because non array value', function () {
+            var aryCollectionTestValues = [
+                undefined,
+                null,
+                {},
+                new Object(),
+                true,
+                false,
+                123,
+                'foo'
+            ];
+
+            aryCollectionTestValues.forEach(function (invalidCollection) {
+                var name = valueToString(invalidCollection);
+
+                it('"' + name + '" passed', function () {
+                    expect(Utils.inArray(invalidCollection, 'foo')).to.be.false;
+                });
+            });
+        });
     });
 
     describe('escapeRegex()', function () {
@@ -319,6 +357,29 @@ describe('Utils', function () {
             expect(result).to.be.an('string');
             expect(result).to.not.equal(str);
             expect(result).to.equal('\\*abc\\*');
+        });
+
+        describe('should do nothing on non string value', function () {
+            var aryNonStringValues = [
+                undefined,
+                null,
+                {},
+                new Object(),
+                [],
+                new Array(),
+                Array(),
+                true,
+                false,
+                123
+            ];
+
+            aryNonStringValues.forEach(function (nonStringValue) {
+                var name = valueToString(nonStringValue);
+
+                it('"' + name + '" passed', function () {
+                    expect(Utils.escapeRegex(nonStringValue)).to.equal('');
+                });
+            });
         });
     });
 });
