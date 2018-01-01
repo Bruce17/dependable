@@ -627,6 +627,10 @@ describe('inject', function () {
 
     describe('load()', function () {
         describe('use method without options', function () {
+            var removeFileExtension = function (str) {
+                return str.replace(/\.\w+$/, '');
+            };
+
             it('should let you register a file', function (done) {
                 var afile = path.join(getTempDir(), 'A1.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -686,10 +690,6 @@ describe('inject', function () {
             });
 
             it('should let you load a file without an extension', function (done) {
-                var removeFileExtension = function (str) {
-                    return str.replace('.js', '');
-                };
-
                 var afile = path.join(getTempDir(), 'A1.js');
                 var acode = 'module.exports = function() { return "a" }';
                 testFiles.push(afile);
@@ -714,6 +714,36 @@ describe('inject', function () {
                         assert.equal(b, 'ab');
 
                         done();
+                    });
+                });
+            });
+
+            describe('should crash if trying to load a file with an unknown extension', function () {
+                var aryFileEndings = [
+                    '.ts',
+                    '.coffee'
+                ];
+
+                aryFileEndings.forEach(function (fileEnding) {
+                    it('*' + fileEnding, function (done) {
+                        var afile = path.join(getTempDir(), 'A1' + fileEnding);
+                        var acode = 'module.exports = function() { return "a" }';
+                        testFiles.push(afile);
+
+                        fs.writeFile(removeFileExtension(afile), acode, function (err) {
+                            assert.ifError(err);
+
+                            try {
+                                container.load(afile);
+
+                                assert.fail(true, 'Should throw exception "Cannot find module ..."');
+                            } catch (ex) {
+                                expect(ex).to.be.ok;
+                                expect(ex.message).to.contain('no such file or directory');
+                            }
+
+                            done();
+                        });
                     });
                 });
             });
@@ -743,6 +773,36 @@ describe('inject', function () {
                         assert.equal(b, 'ab');
 
                         done();
+                    });
+                });
+            });
+
+            describe('should crash if trying to load something as a module file with an unknown extension', function () {
+                var aryFileEndings = [
+                    '.ts',
+                    '.coffee'
+                ];
+
+                aryFileEndings.forEach(function (fileEnding) {
+                    it('*' + fileEnding, function (done) {
+                        var afile = path.join(getTempDir(), 'A1' + fileEnding);
+                        var acode = 'module.exports = function() { return "a" }';
+                        testFiles.push(afile);
+
+                        fs.writeFile(afile, acode, function (err) {
+                            assert.ifError(err);
+
+                            try {
+                                container.load(afile);
+
+                                assert.fail(true, 'Should throw exception "Cannot find module ..."');
+                            } catch (ex) {
+                                expect(ex).to.be.ok;
+                                expect(ex.message).to.contain('Cannot find module');
+                            }
+
+                            done();
+                        });
                     });
                 });
             });

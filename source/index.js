@@ -62,6 +62,7 @@ exports.container = function () {
         } catch (ex) {
             if (!hasFileEnding && ex.message.indexOf('no such file') !== -1) {
                 // Call this method again, but this time assume the target is a file, but the file ending is missing.
+                // TODO: if requested, add more valid file endings or some dynamic solution.
                 return getFileStats(fileOrPath, '.js');
             }
 
