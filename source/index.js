@@ -75,6 +75,84 @@ exports.container = function () {
     };
 
     /**
+     * Return a functions argument list for di dependency injection.
+     *
+     * @param {function} func
+     *
+     * @returns {Array}
+     *
+     * @function argList
+     * @memberOf Index.Container
+     * @protected
+     */
+    var argList = function (func) {
+        // Normal ES5 function check
+        var match = func.toString().match(regex.strFunc);
+
+        if (!match) {
+            // ES6 fat arrow function check
+            match = func.toString().match(regex.strFuncES6);
+
+            if (!match) {
+                throw new Error('Could not parse function arguments: ' + func.toString());
+            }
+        }
+
+        return match[1].split(',')
+            .filter(function (arg) {
+                return arg;
+            })
+            .map(function (str) {
+                return str.trim();
+            });
+    };
+
+    /**
+     * Convert a function into the proper internal di factory format.
+     *
+     * @param {function} func
+     *
+     * @returns {object}
+     *
+     * @function toFactory
+     * @memberOf Index.Container
+     * @protected
+     */
+    var toFactory = function (func) {
+        if (typeof func === 'function') {
+            return {
+                func: func,
+                required: argList(func)
+            };
+        }
+        else {
+            return {
+                func: function () {
+                    return func;
+                },
+                required: []
+            };
+        }
+    };
+
+    /**
+     * Register a new dependency.
+     *
+     * @param {string}   name
+     * @param {function} func
+     *
+     * @returns {function}
+     *
+     * @function registerOne
+     * @memberOf Index.Container
+     * @protected
+     */
+    var registerOne = function (name, func) {
+        factories[name] = toFactory(func);
+        return factories[name];
+    };
+
+    /**
      * Register a dependency in the di-container.
      *
      * @param {string|object} name Register a dependency by its name (+ function) or a hash-set at once.
@@ -195,23 +273,6 @@ exports.container = function () {
     };
 
     /**
-     * Register a new dependency.
-     *
-     * @param {string}   name
-     * @param {function} func
-     *
-     * @returns {function}
-     *
-     * @function registerOne
-     * @memberOf Index.Container
-     * @protected
-     */
-    var registerOne = function (name, func) {
-        factories[name] = toFactory(func);
-        return factories[name];
-    };
-
-    /**
      * Return a list of all factories.
      *
      * @returns {object}
@@ -221,119 +282,6 @@ exports.container = function () {
      */
     var list = function () {
         return factories;
-    };
-
-    /**
-     * Return a list all matching factories.
-     *
-     * @param {string} searchPattern An matching factory name including optional asterisk characters as placeholders.
-     *
-     * @function find
-     * @memberOf Index.Container
-     *
-     * @example
-     * // Find a dependency by its full name
-     * var result = container.find('lodash');
-     * console.log('lodash', result.lodash);
-     *
-     * // Find more dependencies
-     * var controllers = container.find('*Controller');
-     * console.log('controllers', controllers); // e.g. "IndexController", "AuthController", etc.
-     */
-    var find = function (searchPattern) {
-        var result = {};
-        var key;
-
-        // Prepare a regex to select a specific set of the permissions.
-        var preparedRegex = new RegExp(
-            Utils.isString(searchPattern) && searchPattern.length > 0 ?
-                '^' + Utils.escapeRegex(searchPattern).replace('\\*', '.*') + '$' :
-                '',
-            'i'
-        );
-
-        if (preparedRegex.source !== '' && preparedRegex.source !== '(?:)') {
-            for (key in factories) {
-                if (factories.hasOwnProperty(key) && !Utils.inArray(factoryBlacklist, key) && preparedRegex.test(key)) {
-                    result[key] = get(key);
-                }
-            }
-        }
-
-        return result;
-    };
-
-    /**
-     * Load a directory of files or a file into the di-container.
-     * The filename will be the identifier.
-     *
-     * @param {string} fileOrDir A file path or a path.
-     * @param {Array}  subDirs   Also load content from subdirectories depending on "fileOrDir" as base path.
-     * @param {object} options   Pass optional options to this method.
-     *
-     * @returns {Array|function} A list of register files or just one register file function.
-     *
-     * @function load
-     * @memberOf Index.Container
-     *
-     * @example
-     * // Load all dependencies in a directory
-     * container.load(__dirname + '/services');
-     * // e.g. loads "Image.js", "Excel.js", "Export.js"
-     *
-     * // Load all dependencies in a directory and subdirectories
-     * container.load(__dirname + '/models', ['user', 'role']);
-     * // e.g. loads "user/Foo.js", "user/Bar.js", "role/NoAccess.js", "role/Admin.js"
-     *
-     * // Load all dependencies in a directory and prepend a prefix
-     * container.load(__dirname + '/models', {prefix: 'Model'});
-     * // e.g. loads "Foo.js" into "ModelFoo" or "Bar.js" into "ModelBar"
-     *
-     * // Load all dependencies in a directory, subdirectories and prepend a prefix
-     * container.load(__dirname + '/models', ['user', 'role'], {prefix: 'Model'});
-     * // e.g. loads "user/Foo.js" into "ModelFoo" or "role/Admin.js" into "ModelAdmin"
-     *
-     * // You can also use "postfix" to append a optional string to every loaded dependency.
-     */
-    var load = function (fileOrDir, subDirs, options) {
-        // Maybe the user only passed two arguments an "path" + "options". Adjust the arguments in that case.
-        if (options === undefined) {
-            if (Utils.isObject(subDirs)) {
-                options = subDirs;
-            }
-        }
-
-        // Load a directory
-        if (getFileStats(fileOrDir).isDirectory()) {
-            var results = loadDir(fileOrDir, options);
-
-            // Load a subdirectory
-            if (Utils.isArray(subDirs)) {
-                var i, iLen;
-                var subDir;
-
-                // Iterate over each sub directory ...
-                for (i = 0, iLen = subDirs.length; i < iLen; i++) {
-                    subDir = path.join(fileOrDir, subDirs[i]);
-
-                    // ... and load it via "loadDir"
-                    if (getFileStats(subDir).isDirectory()) {
-                        results.concat(
-                            loadDir(subDir, options)
-                        );
-                    } else {
-                        results.concat([
-                            loadFile(subDir, options)
-                        ]);
-                    }
-                }
-            }
-
-            return results;
-        }
-
-        // Load a file
-        return loadFile(fileOrDir, options);
     };
 
     /**
@@ -410,77 +358,93 @@ exports.container = function () {
     };
 
     /**
-     * Convert a function into the proper internal di factory format.
+     * Load a directory of files or a file into the di-container.
+     * The filename will be the identifier.
      *
-     * @param {function} func
+     * @param {string} fileOrDir A file path or a path.
+     * @param {Array}  subDirs   Also load content from subdirectories depending on "fileOrDir" as base path.
+     * @param {object} options   Pass optional options to this method.
      *
-     * @returns {object}
+     * @returns {Array|function} A list of register files or just one register file function.
      *
-     * @function toFactory
+     * @function load
      * @memberOf Index.Container
-     * @protected
+     *
+     * @example
+     * // Load all dependencies in a directory
+     * container.load(__dirname + '/services');
+     * // e.g. loads "Image.js", "Excel.js", "Export.js"
+     *
+     * // Load all dependencies in a directory and subdirectories
+     * container.load(__dirname + '/models', ['user', 'role']);
+     * // e.g. loads "user/Foo.js", "user/Bar.js", "role/NoAccess.js", "role/Admin.js"
+     *
+     * // Load all dependencies in a directory and prepend a prefix
+     * container.load(__dirname + '/models', {prefix: 'Model'});
+     * // e.g. loads "Foo.js" into "ModelFoo" or "Bar.js" into "ModelBar"
+     *
+     * // Load all dependencies in a directory, subdirectories and prepend a prefix
+     * container.load(__dirname + '/models', ['user', 'role'], {prefix: 'Model'});
+     * // e.g. loads "user/Foo.js" into "ModelFoo" or "role/Admin.js" into "ModelAdmin"
+     *
+     * // You can also use "postfix" to append a optional string to every loaded dependency.
      */
-    var toFactory = function (func) {
-        if (typeof func === 'function') {
-            return {
-                func: func,
-                required: argList(func)
-            };
-        }
-        else {
-            return {
-                func: function () {
-                    return func;
-                },
-                required: []
-            };
-        }
-    };
-
-    /**
-     * Return a functions argument list for di dependency injection.
-     *
-     * @param {function} func
-     *
-     * @returns {Array}
-     *
-     * @function argList
-     * @memberOf Index.Container
-     * @protected
-     */
-    var argList = function (func) {
-        // Normal ES5 function check
-        var match = func.toString().match(regex.strFunc);
-
-        if (!match) {
-            // ES6 fat arrow function check
-            match = func.toString().match(regex.strFuncES6);
-
-            if (!match) {
-                throw new Error('Could not parse function arguments: ' + func.toString());
+    var load = function (fileOrDir, subDirs, options) {
+        // Maybe the user only passed two arguments an "path" + "options". Adjust the arguments in that case.
+        if (options === undefined) {
+            if (Utils.isObject(subDirs)) {
+                options = subDirs;
             }
         }
 
-        return match[1].split(',')
-            .filter(notEmpty)
-            .map(function (str) {
-                return str.trim();
-            });
+        // Load a directory
+        if (getFileStats(fileOrDir).isDirectory()) {
+            var results = loadDir(fileOrDir, options);
+
+            // Load a subdirectory
+            if (Utils.isArray(subDirs)) {
+                var i, iLen;
+                var subDir;
+
+                // Iterate over each sub directory ...
+                for (i = 0, iLen = subDirs.length; i < iLen; i++) {
+                    subDir = path.join(fileOrDir, subDirs[i]);
+
+                    // ... and load it via "loadDir"
+                    if (getFileStats(subDir).isDirectory()) {
+                        results.concat(
+                            loadDir(subDir, options)
+                        );
+                    } else {
+                        results.concat([
+                            loadFile(subDir, options)
+                        ]);
+                    }
+                }
+            }
+
+            return results;
+        }
+
+        // Load a file
+        return loadFile(fileOrDir, options);
     };
 
     /**
-     * Check if a argument is not empty.
      *
-     * @param {*} arg
+     * @param {Array}  visited
+     * @param {string} name
      *
-     * @returns {boolean}
+     * @returns {Number}
      *
-     * @function notEmpty
+     * @function haveVisited
      * @memberOf Index.Container
      * @protected
      */
-    var notEmpty = function (arg) {
-        return arg;
+    var haveVisited = function (visited, name) {
+        return visited.filter(function (n) {
+            return n === name;
+        }).length;
     };
 
     /**
@@ -545,20 +509,43 @@ exports.container = function () {
     };
 
     /**
+     * Return a list all matching factories.
      *
-     * @param {Array}  visited
-     * @param {string} name
+     * @param {string} searchPattern An matching factory name including optional asterisk characters as placeholders.
      *
-     * @returns {Number}
-     *
-     * @function haveVisited
+     * @function find
      * @memberOf Index.Container
-     * @protected
+     *
+     * @example
+     * // Find a dependency by its full name
+     * var result = container.find('lodash');
+     * console.log('lodash', result.lodash);
+     *
+     * // Find more dependencies
+     * var controllers = container.find('*Controller');
+     * console.log('controllers', controllers); // e.g. "IndexController", "AuthController", etc.
      */
-    var haveVisited = function (visited, name) {
-        return visited.filter(function (n) {
-            return n === name;
-        }).length;
+    var find = function (searchPattern) {
+        var result = {};
+        var key;
+
+        // Prepare a regex to select a specific set of the permissions.
+        var preparedRegex = new RegExp(
+            Utils.isString(searchPattern) && searchPattern.length > 0 ?
+                '^' + Utils.escapeRegex(searchPattern).replace('\\*', '.*') + '$' :
+                '',
+            'i'
+        );
+
+        if (preparedRegex.source !== '' && preparedRegex.source !== '(?:)') {
+            for (key in factories) {
+                if (factories.hasOwnProperty(key) && !Utils.inArray(factoryBlacklist, key) && preparedRegex.test(key)) {
+                    result[key] = get(key);
+                }
+            }
+        }
+
+        return result;
     };
 
     /**
