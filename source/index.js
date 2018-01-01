@@ -14,7 +14,6 @@ var Utils = require('./utils');
 
 // Define all dependencies outside the container function to keep them
 var factories = {};
-var modules = {};
 
 /**
  * simple dependency injection. No nesting, just pure simplicity
@@ -512,15 +511,7 @@ exports.container = function () {
 
         var factory = factories[name];
         if (!factory) {
-            var module = modules[name];
-
-            if (module) {
-                register(name, require(module));
-                factory = factories[name];
-            }
-            else {
-                throw new Error('Dependency "' + name + '" was not registered');
-            }
+            throw new Error('Dependency "' + name + '" was not registered');
         }
 
         // Use the one you already created
@@ -610,7 +601,6 @@ exports.container = function () {
      */
     var clearAll = function () {
         factories = {};
-        modules = {};
 
         registerContainer();
     };
