@@ -1042,6 +1042,66 @@ describe('inject', function () {
                     });
                 });
             });
+
+            describe('should let you register a whole directory, but sub-directory accidentally is a file', function () {
+                it('with file ending', function (done) {
+                    var dir = path.join(getTempDir(), 'testinject/');
+
+                    var afile = path.join(dir, 'A7.js');
+                    var acode = 'module.exports = function() { return "a" }';
+                    testFiles.push(afile);
+
+                    var bfile = path.join(dir, 'B7.js');
+                    var bcode = 'module.exports = function(A7) { return A7 + "b" }';
+                    testFiles.push(bfile);
+
+                    fs.mkdir(dir, function (err) {
+                        fs.writeFile(afile, acode, function (err) {
+                            assert.ifError(err);
+
+                            fs.writeFile(bfile, bcode, function (err) {
+                                assert.ifError(err);
+
+                                container.load(dir, ['B7.js']);
+
+                                var b = container.get('B7');
+                                assert.equal(b, 'ab');
+
+                                done();
+                            });
+                        });
+                    });
+                })
+
+                it('without file ending', function (done) {
+                    var dir = path.join(getTempDir(), 'testinject/');
+
+                    var afile = path.join(dir, 'A8.js');
+                    var acode = 'module.exports = function() { return "a" }';
+                    testFiles.push(afile);
+
+                    var bfile = path.join(dir, 'B8.js');
+                    var bcode = 'module.exports = function(A8) { return A8 + "b" }';
+                    testFiles.push(bfile);
+
+                    fs.mkdir(dir, function (err) {
+                        fs.writeFile(afile, acode, function (err) {
+                            assert.ifError(err);
+
+                            fs.writeFile(bfile, bcode, function (err) {
+                                assert.ifError(err);
+
+                                container.load(dir, ['B8']);
+
+                                var b = container.get('B8');
+                                assert.equal(b, 'ab');
+
+                                done();
+                            });
+                        });
+                    });
+                })
+            });
         });
 
         describe('test sub directory and prefix option', function () {

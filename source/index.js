@@ -299,10 +299,8 @@ exports.container = function () {
             }
         }
 
-        var fileStats = getFileStats(fileOrDir);
-
         // Load a directory
-        if (fileStats.isDirectory()) {
+        if (getFileStats(fileOrDir).isDirectory()) {
             var results = loadDir(fileOrDir, options);
 
             // Load a subdirectory
@@ -315,10 +313,14 @@ exports.container = function () {
                     subDir = path.join(fileOrDir, subDirs[i]);
 
                     // ... and load it via "loadDir"
-                    if (fs.statSync(subDir).isDirectory()) {
+                    if (getFileStats(subDir).isDirectory()) {
                         results.concat(
                             loadDir(subDir, options)
                         );
+                    } else {
+                        results.concat([
+                            loadFile(subDir, options)
+                        ]);
                     }
                 }
             }
