@@ -119,9 +119,12 @@ exports.container = function () {
             var key;
 
             for (key in hash) {
-                if (hash.hasOwnProperty(key)) {
-                    results.push(registerOne(key, hash[key]));
+                /* istanbul ignore next */
+                if (!hash.hasOwnProperty(key)) {
+                    continue;
                 }
+
+                results.push(registerOne(key, hash[key]));
             }
 
             return results;
@@ -166,13 +169,16 @@ exports.container = function () {
             var key;
 
             for (key in hash) {
-                if (hash.hasOwnProperty(key)) {
-                    results.push(registerOne(key, (function (library) {
-                        return function () {
-                            return library;
-                        };
-                    })(hash[key])));
+                /* istanbul ignore next */
+                if (!hash.hasOwnProperty(key)) {
+                    continue;
                 }
+
+                results.push(registerOne(key, (function (library) {
+                    return function () {
+                        return library;
+                    };
+                })(hash[key])));
             }
 
             return results;
