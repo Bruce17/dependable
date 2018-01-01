@@ -43,7 +43,7 @@
     "no-unused-vars": 2,
     "strict": [
       2,
-      "function"
+      "safe"
     ],
     "no-invalid-this": 2,
     "keyword-spacing": [

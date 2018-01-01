@@ -6,6 +6,8 @@
  * @namespace Utils
  */
 
+'use strict';
+
 var regex = {
     escape: /[.*+?^${}()|[\]\/\\]/g
 };
@@ -25,8 +27,6 @@ var regexInst = {
  * @memberOf Utils
  */
 exports.isArray = function isObject(ary) {
-    'use strict';
-
     return (ary === Object(ary)) && (ary instanceof Array);
 };
 
@@ -41,8 +41,6 @@ exports.isArray = function isObject(ary) {
  * @memberOf Utils
  */
 exports.isObject = function isObject(obj) {
-    'use strict';
-
     return (obj === Object(obj)) && !(obj instanceof Array);
 };
 
@@ -57,8 +55,6 @@ exports.isObject = function isObject(obj) {
  * @memberOf Utils
  */
 exports.isString = function isString(str) {
-    'use strict';
-
     return (
         (str === String(str)) ||
         (this.isObject(str) && str.valueOf() === String(str.valueOf()))
@@ -76,8 +72,6 @@ exports.isString = function isString(str) {
  * @memberOf Utils
  */
 exports.isUndefined = function isUndefined(value) {
-    'use strict';
-
     return value === undefined;
 };
 
@@ -93,8 +87,6 @@ exports.isUndefined = function isUndefined(value) {
  * @memberOf Utils
  */
 exports.inArray = function inArray(haystack, needle) {
-    'use strict';
-
     var result = false;
 
     if (this.isArray(haystack)) {
@@ -123,8 +115,6 @@ exports.inArray = function inArray(haystack, needle) {
  * @memberOf Utils
  */
 exports.simpleCompare = function simpleCompare(a, b) {
-    'use strict';
-
     var result = false;
 
     if (this.isObject(a) && this.isObject(b)) {
@@ -150,8 +140,6 @@ exports.simpleCompare = function simpleCompare(a, b) {
  * @memberOf Utils
  */
 exports.escapeRegex = function escapeRegex(string) {
-    'use strict';
-
     var escapeString = (this.isString(string) ? string : '');
 
     return (escapeString && regexInst.escape.test(escapeString)) ?

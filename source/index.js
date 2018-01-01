@@ -6,6 +6,8 @@
  * @namespace Index
  */
 
+'use strict';
+
 var path = require('path');
 var fs = require('fs');
 var Utils = require('./utils');
@@ -27,8 +29,6 @@ var modules = {};
  * var container = require('@bruce17/dependable').container();
  */
 exports.container = function () {
-    'use strict';
-
     var container = {};
 
     // Define some regex
