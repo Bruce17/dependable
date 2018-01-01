@@ -12,6 +12,11 @@ var path = require('path');
 var fs = require('fs');
 var Utils = require('./utils');
 
+/* istanbul ignore next */
+if (typeof console.debug === 'undefined') {
+    console.debug = console.info;
+}
+
 // Define all dependencies outside the container function to keep them
 var factories = {};
 
