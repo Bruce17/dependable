@@ -39,6 +39,7 @@
     "test-watch": "node_modules/.bin/mocha -R progress --watch",
     "test-cov": "node --harmony node_modules/istanbul-harmony/lib/cli.js cover ./node_modules/mocha/bin/_mocha  -- -u exports",
     "test-travis": "node --harmony node_modules/istanbul-harmony/lib/cli.js cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -u exports",
+    "test-appveyor": "npm run test",
     "coveralls": "node ./node_modules/.bin/coveralls < ./coverage/lcov.info",
     "codeclimate": "node ./node_modules/.bin/codeclimate-test-reporter < ./coverage/lcov.info",
     "codacy": "node ./node_modules/.bin/codacy-coverage < ./coverage/lcov.info",
