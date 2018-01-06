@@ -943,7 +943,7 @@ describe('inject', function () {
             });
 
             it('should let you register a whole directory', function (done) {
-                var dir = path.join(getTempDir(), 'testinject');
+                var dir = path.join(os.tmpDir(), 'testinject');
 
                 var afile = path.join(dir, 'A42.js');
                 var acode = 'module.exports = function() { return "a" }';

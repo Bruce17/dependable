@@ -61,6 +61,10 @@
     "no-multi-str": 2,
     "no-trailing-spaces": 2,
     "no-mixed-spaces-and-tabs": 2,
-    "eol-last": 2
+    "eol-last": 2,
+    "brace-style": [
+      2,
+      "1tbs"
+    ]
   }
 }
