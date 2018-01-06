@@ -14,7 +14,6 @@ var Utils = require('./utils');
 
 // Define all dependencies outside the container function to keep them
 var factories = {};
-var modules = {};
 
 // Define some regex
 var regex = {
@@ -34,20 +33,28 @@ var factoryBlacklist = [
 var exports = module.exports = {};
 
 
-
 /**
- * Check if a argument is not empty.
+ * Get a file's or directory's statistics.
  *
- * @param {*} arg
+ * @param {string}      fileOrPath
+ * @param {string|null} [fileEnding=null] Append this optional file ending to "fileOrPath". Default: no file ending.
  *
- * @returns {boolean}
- *
- * @function notEmpty
- * @memberOf Library
- * @property
+ * @return {fs.Stats|object}
  */
-var notEmpty = function notEmpty(arg) {
-    return arg;
+var getFileStats = function (fileOrPath, fileEnding) {
+    var hasFileEnding = (typeof fileEnding === 'string');
+
+    try {
+        return fs.lstatSync(fileOrPath + (hasFileEnding ? fileEnding : ''));
+    } catch (ex) {
+        if (!hasFileEnding && ex.message.indexOf('no such file') !== -1) {
+            // Call this method again, but this time assume the target is a file, but the file ending is missing.
+            // TODO: if requested, add more valid file endings or some dynamic solution.
+            return getFileStats(fileOrPath, '.js');
+        }
+
+        throw ex;
+    }
 };
 
 /**
@@ -75,7 +82,9 @@ var argList = function argList(func) {
     }
 
     return match[1].split(',')
-        .filter(notEmpty)
+        .filter(function (arg) {
+            return arg;
+        })
         .map(function (str) {
             return str.trim();
         });
@@ -192,9 +201,12 @@ exports.register = function register(name, func) {
         var key;
 
         for (key in hash) {
-            if (hash.hasOwnProperty(key)) {
-                results.push(registerOne(key, hash[key]));
+            /* istanbul ignore next */
+            if (!hash.hasOwnProperty(key)) {
+                continue;
             }
+
+            results.push(registerOne(key, hash[key]));
         }
 
         return results;
@@ -238,13 +250,16 @@ exports.registerLibrary = function registerLibrary(name, func) {
         var key;
 
         for (key in hash) {
-            if (hash.hasOwnProperty(key)) {
-                results.push(registerOne(key, (function (library) {
-                    return function () {
-                        return library;
-                    };
-                })(hash[key])));
+            /* istanbul ignore next */
+            if (!hash.hasOwnProperty(key)) {
+                continue;
             }
+
+            results.push(registerOne(key, (function (library) {
+                return function () {
+                    return library;
+                };
+            })(hash[key])));
         }
 
         return results;
@@ -321,7 +336,6 @@ var loadDir = function loadDir(dir, options) {
 
     var results = [];
     var file;
-    var stats;
 
     for (var i = 0, iMax = files.length; i < iMax; i++) {
         file = files[i];
@@ -330,9 +344,11 @@ var loadDir = function loadDir(dir, options) {
             continue;
         }
 
-        stats = fs.statSync(file);
-        if (stats.isFile()) {
+        if (getFileStats(file).isFile()) {
             results.push(loadFile(file, options));
+        } else {
+            console.debug('loadDir(): no recursive directory loading at the moment');
+            //results.concat(loadDir(file, options));
         }
     }
 
@@ -380,7 +396,7 @@ exports.load = function load(fileOrDir, subDirs, options) {
     }
 
     // Load a directory
-    if (fs.statSync(fileOrDir).isDirectory()) {
+    if (getFileStats(fileOrDir).isDirectory()) {
         var results = loadDir(fileOrDir, options);
 
         // Load a subdirectory
@@ -393,10 +409,14 @@ exports.load = function load(fileOrDir, subDirs, options) {
                 subDir = path.join(fileOrDir, subDirs[i]);
 
                 // ... and load it via "loadDir"
-                if (fs.statSync(subDir).isDirectory()) {
+                if (getFileStats(subDir).isDirectory()) {
                     results.concat(
                         loadDir(subDir, options)
                     );
+                } else {
+                    results.concat([
+                        loadFile(subDir, options)
+                    ]);
                 }
             }
         }
@@ -441,14 +461,7 @@ exports.get = function get(name, overrides, visited) {
 
     var factory = factories[name];
     if (!factory) {
-        var module = modules[name];
-
-        if (module) {
-            exports.register(name, require(module));
-            factory = factories[name];
-        } else {
-            throw new Error('Dependency "' + name + '" was not registered');
-        }
+        throw new Error('Dependency "' + name + '" was not registered');
     }
 
     // Use the one you already created
@@ -561,5 +574,4 @@ exports.registerContainer = function registerContainer(container) {
  */
 exports.clearAll = function clearAll() {
     factories = {};
-    modules = {};
 };

@@ -10,6 +10,11 @@
 
 var lib = require('./library.js');
 
+/* istanbul ignore next */
+if (typeof console.debug === 'undefined') {
+    console.debug = console.info;
+}
+
 /**
  * simple dependency injection. No nesting, just pure simplicity
  *

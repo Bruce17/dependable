@@ -40,10 +40,12 @@ test_script:
   - npm --version
 
   # run lint
-  - npm run-script lint
+  # NOTICE: let travis do the linting
+#  - npm run-script lint
 
   # run tests
-  - npm run-script test-travis
+  # NOTICE: run without code coverage on appveyor -> travis handles that
+  - npm run-script test-appveyor
 
 #after_test:
 #  # send coverage data to coveralls
