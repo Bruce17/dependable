@@ -39,22 +39,25 @@
     "test-watch": "node_modules/.bin/mocha -R progress --watch",
     "test-cov": "node --harmony node_modules/istanbul-harmony/lib/cli.js cover ./node_modules/mocha/bin/_mocha  -- -u exports",
     "test-travis": "node --harmony node_modules/istanbul-harmony/lib/cli.js cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -u exports",
+    "test-appveyor": "npm run test",
     "coveralls": "node ./node_modules/.bin/coveralls < ./coverage/lcov.info",
     "codeclimate": "node ./node_modules/.bin/codeclimate-test-reporter < ./coverage/lcov.info",
+    "codacy": "node ./node_modules/.bin/codacy-coverage < ./coverage/lcov.info",
     "generate-docs": "./node_modules/.bin/jsdoc --destination docs --package package.json --readme README.md --recurse source"
   },
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "chai": "^3.0.0",
-    "codeclimate-test-reporter": "^0.3.3",
-    "coveralls": "^2.11.2",
+    "chai": "^4.1.2",
+    "codacy-coverage": "^2.0.0",
+    "codeclimate-test-reporter": "^0.5.0",
+    "coveralls": "^3.0.0",
     "eslint": "^2.13.1",
     "istanbul-harmony": "^0.3.15",
     "jsdoc": "^3.3.2",
-    "mocha": "^2.2.5",
-    "should": "^9.0.2",
-    "sinon": "^1.15.3",
+    "mocha": "^3.5.3",
+    "should": "^13.1.3",
+    "sinon": "^3.3.0",
     "sinon-chai": "^2.8.0"
   }
 }
