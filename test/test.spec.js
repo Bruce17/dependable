@@ -12,6 +12,17 @@ var fs = require('fs');
 var os = require('os');
 var path = require('path');
 
+
+/**
+ * Return os temp directory.
+ *
+ * @return {string}
+ */
+var getTempDir = function () {
+    return (typeof os.tmpdir !== 'undefined' ? os.tmpdir() : os.tmpDir());
+};
+
+
 /**
  * NOTICE: this file was automatically converted from Coffeescript back to pure JavaScript.
  */
@@ -554,10 +565,10 @@ describe('inject', function () {
                 depFnc2 = function foo() {
                     return 'bar';
                 };
-                depFnc3 = function (depFnc1,depFnc2) { // no whitespace between args
+                depFnc3 = function (depFnc1, depFnc2) { // no whitespace between args
                     return depFnc1 + ' ' + depFnc2;
                 };
-                depFnc4 = function foo(   depFnc1,    depFnc2   ) { // with whitespace between args
+                depFnc4 = function foo(depFnc1, depFnc2) { // with whitespace between args
                     return depFnc2 + ' ' + depFnc1;
                 };
 
@@ -785,11 +796,11 @@ describe('inject', function () {
     describe('load()', function () {
         describe('use method without options', function () {
             it('should let you register a file', function (done) {
-                var afile = path.join(os.tmpDir(), 'A1.js');
+                var afile = path.join(getTempDir(), 'A1.js');
                 var acode = 'module.exports = function() { return "a" }';
                 testFiles.push(afile);
 
-                var bfile = path.join(os.tmpDir(), 'B1.js');
+                var bfile = path.join(getTempDir(), 'B1.js');
                 var bcode = 'module.exports = function(A1) { return A1 + "b" }';
                 testFiles.push(bfile);
 
@@ -814,7 +825,7 @@ describe('inject', function () {
             });
 
             it('should let you register a whole directory', function (done) {
-                var dir = path.join(os.tmpDir(), 'testinject');
+                var dir = path.join(getTempDir(), 'testinject');
 
                 var afile = path.join(dir, 'A2.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -850,7 +861,7 @@ describe('inject', function () {
 
             // NOTICE: this test does not work. We need to load every module to read the module's dependencies!
             xit('should be lazy', function (done) {
-                var dir = path.join(os.tmpDir(), 'testinject');
+                var dir = path.join(getTempDir(), 'testinject');
 
                 var cfile = path.join(dir, 'C.js');
                 var ccode = 'throw new Error("Should not be loaded because we do not require it");';
@@ -887,11 +898,11 @@ describe('inject', function () {
             });
 
             it('should let you register a file', function (done) {
-                var afile = path.join(os.tmpDir(), 'A3.js');
+                var afile = path.join(getTempDir(), 'A3.js');
                 var acode = 'module.exports = function() { return "a" }';
                 testFiles.push(afile);
 
-                var bfile = path.join(os.tmpDir(), 'B3.js');
+                var bfile = path.join(getTempDir(), 'B3.js');
                 var bcode = 'module.exports = function(Test_A3) { return Test_A3 + "b" }';
                 testFiles.push(bfile);
 
@@ -916,7 +927,7 @@ describe('inject', function () {
             });
 
             it('should let you register a whole directory', function (done) {
-                var dir = path.join(os.tmpDir(), 'testinject');
+                var dir = path.join(getTempDir(), 'testinject');
 
                 var afile = path.join(dir, 'A4.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -955,11 +966,11 @@ describe('inject', function () {
             });
 
             it('should let you register a file', function (done) {
-                var afile = path.join(os.tmpDir(), 'A32.js');
+                var afile = path.join(getTempDir(), 'A32.js');
                 var acode = 'module.exports = function() { return "a" }';
                 testFiles.push(afile);
 
-                var bfile = path.join(os.tmpDir(), 'B32.js');
+                var bfile = path.join(getTempDir(), 'B32.js');
                 var bcode = 'module.exports = function(A32_Test) { return A32_Test + "b" }';
                 testFiles.push(bfile);
 
@@ -984,7 +995,7 @@ describe('inject', function () {
             });
 
             it('should let you register a whole directory', function (done) {
-                var dir = path.join(os.tmpDir(), 'testinject');
+                var dir = path.join(getTempDir(), 'testinject');
 
                 var afile = path.join(dir, 'A42.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -1023,7 +1034,7 @@ describe('inject', function () {
             });
 
             it('should let you register a file', function (done) {
-                var baseDir = os.tmpDir() + '/';
+                var baseDir = getTempDir() + '/';
 
                 var afile = path.join(baseDir, 'A5.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -1056,7 +1067,7 @@ describe('inject', function () {
             });
 
             it('should let you register a whole directory', function (done) {
-                var dir = path.join(os.tmpDir(), 'testinject/');
+                var dir = path.join(getTempDir(), 'testinject/');
 
                 var afile = path.join(dir, 'A6.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -1100,7 +1111,7 @@ describe('inject', function () {
             });
 
             it('should let you register a file', function (done) {
-                var baseDir = os.tmpDir() + '/';
+                var baseDir = getTempDir() + '/';
 
                 var afile = path.join(baseDir, 'A7.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -1133,7 +1144,7 @@ describe('inject', function () {
             });
 
             it('should let you register a whole directory', function (done) {
-                var dir = path.join(os.tmpDir(), 'testinject/');
+                var dir = path.join(getTempDir(), 'testinject/');
 
                 var afile = path.join(dir, 'A8.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -1177,7 +1188,7 @@ describe('inject', function () {
             });
 
             it('should let you register a file', function (done) {
-                var baseDir = os.tmpDir() + '/';
+                var baseDir = getTempDir() + '/';
 
                 var afile = path.join(baseDir, 'A9.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -1210,7 +1221,7 @@ describe('inject', function () {
             });
 
             it('should let you register a whole directory', function (done) {
-                var dir = path.join(os.tmpDir(), 'testinject/');
+                var dir = path.join(getTempDir(), 'testinject/');
 
                 var afile = path.join(dir, 'A10.js');
                 var acode = 'module.exports = function() { return "a" }';
@@ -1243,11 +1254,11 @@ describe('inject', function () {
     describe('register()', function () {
         describe('check regex to receive dependencies', function () {
             it('should read dependencies from a multi line function', function (done) {
-                var afile = path.join(os.tmpDir(), 'AA1.js');
+                var afile = path.join(getTempDir(), 'AA1.js');
                 var acode = 'module.exports = function() {\nreturn "a";\n}\n';
                 testFiles.push(afile);
 
-                var bfile = path.join(os.tmpDir(), 'BB1.js');
+                var bfile = path.join(getTempDir(), 'BB1.js');
                 var bcode = 'module.exports = function(\nAA1\n) {\nreturn AA1 + "b";\n}\n';
                 testFiles.push(bfile);
 
@@ -1272,11 +1283,11 @@ describe('inject', function () {
             });
 
             it('should read dependencies from a multi line ES6 fat arrow function', function (done) {
-                var afile = path.join(os.tmpDir(), 'AA1.js');
+                var afile = path.join(getTempDir(), 'AA1.js');
                 var acode = 'module.exports = () => {\nreturn "a";\n}\n';
                 testFiles.push(afile);
 
-                var bfile = path.join(os.tmpDir(), 'BB1.js');
+                var bfile = path.join(getTempDir(), 'BB1.js');
                 var bcode = 'module.exports = (\nAA1\n) => {\nreturn AA1 + "b";\n}\n';
                 testFiles.push(bfile);
 
@@ -1302,11 +1313,11 @@ describe('inject', function () {
         });
     });
 
-    describe('find()', function(){
+    describe('find()', function () {
         var libA, libB, bibC, bibD;
         var depA, depB, abhC, abhD;
 
-        before(function(){
+        before(function () {
             libA = function () {
                 return 'foo bar';
             };
@@ -1354,7 +1365,7 @@ describe('inject', function () {
             expect(container.find).to.be.a('function');
         });
 
-        it('should return an empty result for an empty search pattern ""', function(){
+        it('should return an empty result for an empty search pattern ""', function () {
             var dependencies = container.find('');
 
             expect(dependencies).to.be.ok;
@@ -1362,7 +1373,7 @@ describe('inject', function () {
             expect(Object.keys(dependencies)).to.have.length(0);
         });
 
-        it('should return all dependencies for search pattern "*"', function(){
+        it('should return all dependencies for search pattern "*"', function () {
             var dependencies = container.find('*');
 
             expect(dependencies).to.be.ok;
@@ -1370,7 +1381,7 @@ describe('inject', function () {
             expect(Object.keys(dependencies)).to.have.length(8);
         });
 
-        it('should return all dependencies "dep*"', function(){
+        it('should return all dependencies "dep*"', function () {
             var dependencies = container.find('dep*');
 
             expect(dependencies).to.be.ok;
@@ -1380,7 +1391,7 @@ describe('inject', function () {
             expect(dependencies).to.have.property('depB');
         });
 
-        it('should return all dependencies "abh*"', function(){
+        it('should return all dependencies "abh*"', function () {
             var dependencies = container.find('abh*');
 
             expect(dependencies).to.be.ok;
@@ -1390,7 +1401,7 @@ describe('inject', function () {
             expect(dependencies).to.have.property('abhD');
         });
 
-        it('should return all libraries "lib*"', function(){
+        it('should return all libraries "lib*"', function () {
             var dependencies = container.find('lib*');
 
             expect(dependencies).to.be.ok;
@@ -1400,7 +1411,7 @@ describe('inject', function () {
             expect(dependencies).to.have.property('libB');
         });
 
-        it('should return all libraries "bib*"', function(){
+        it('should return all libraries "bib*"', function () {
             var dependencies = container.find('bib*');
 
             expect(dependencies).to.be.ok;
@@ -1410,7 +1421,7 @@ describe('inject', function () {
             expect(dependencies).to.have.property('bibD');
         });
 
-        it('should return all dependencies "*A"', function(){
+        it('should return all dependencies "*A"', function () {
             var dependencies = container.find('*A');
 
             expect(dependencies).to.be.ok;
@@ -1420,7 +1431,7 @@ describe('inject', function () {
             expect(dependencies).to.have.property('libA');
         });
 
-        it('should return a direct match "depA"', function(){
+        it('should return a direct match "depA"', function () {
             var dependencies = container.find('depA');
 
             expect(dependencies).to.be.ok;
@@ -1429,7 +1440,7 @@ describe('inject', function () {
             expect(dependencies).to.have.property('depA');
         });
 
-        it('should not allow regex as argument"', function(){
+        it('should not allow regex as argument"', function () {
             var dependencies = container.find('bib.*');
 
             expect(dependencies).to.be.ok;
