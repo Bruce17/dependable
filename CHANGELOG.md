@@ -1,3 +1,16 @@
+# HEAD
+
+- Add latest Node.js versions into CI pipeline
+- Update dependencies
+- Remove support for old Node.js versions < v10 to use latest build tools
+- Remove Codeclimate and Codacy
+
+
+# 1.3.0
+
+- Fix issue with Node.js v8 (see https://github.com/Bruce17/dependable/issues/5)
+
+
 # 1.3.0
 
 - Update unit tests.

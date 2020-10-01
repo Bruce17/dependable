@@ -736,7 +736,7 @@ describe('inject', function () {
                             try {
                                 container.load(afile);
 
-                                assert.fail(true, 'Should throw exception "Cannot find module ..."');
+                                assert.fail('Should throw exception "Cannot find module ..."');
                             } catch (ex) {
                                 expect(ex).to.be.ok;
                                 expect(ex.message).to.contain('no such file or directory');
@@ -795,7 +795,7 @@ describe('inject', function () {
                             try {
                                 container.load(afile);
 
-                                assert.fail(true, 'Should throw exception "Cannot find module ..."');
+                                assert.fail('Should throw exception "Cannot find module ..."');
                             } catch (ex) {
                                 expect(ex).to.be.ok;
                                 expect(ex.message).to.contain('Cannot find module');
