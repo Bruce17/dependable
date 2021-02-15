@@ -4,6 +4,7 @@
 - Update dependencies
 - Remove support for old Node.js versions < v10 to use latest build tools
 - Remove Codeclimate and Codacy
+- Replace Travis with GitHub actions
 
 
 # 1.3.0
