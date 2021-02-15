@@ -36,7 +36,7 @@
     "lint": "eslint source/",
     "mocha": "_mocha -b -R spec",
     "test-cov": "nyc npm run mocha",
-    "test-coveralls": "nyc npm run mocha && shx cat ./coverage/lcov.info | node ./bin/coveralls.js --verbose",
+    "test-coveralls": "nyc npm run mocha && nyc report --reporter=text-lcov | node ./node_modules/coveralls/bin/coveralls.js",
     "test": "npm run lint && npm run mocha",
     "test-watch": "mocha -R progress --watch",
     "generate-docs": "./node_modules/.bin/jsdoc --destination docs --package package.json --readme README.md --recurse source"
@@ -52,7 +52,6 @@
     "mocha-lcov-reporter": "^1.3.0",
     "nyc": "^15.1.0",
     "should": "^13.2.3",
-    "shx": "^0.3.3",
     "sinon": "^9.2.4",
     "sinon-chai": "^3.5.0"
   }
