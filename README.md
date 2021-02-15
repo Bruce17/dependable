@@ -3,27 +3,12 @@
 A minimalist dependency injection framework for node.js.
 
 
-**NPM**:
 [![npm package](https://img.shields.io/npm/v/@bruce17/dependable.svg?style=flat-square)](https://www.npmjs.org/package/@bruce17/dependable)
-
-**GitHub**:
 [![tag:?](https://img.shields.io/github/tag/Bruce17/dependable.svg?style=flat-square)](https://github.com/Bruce17/dependable/releases)
-
-**Dependencies**:
+[![Code Quality](https://github.com/Bruce17/dependable/workflows/code-quality/badge.svg?branch=master)](https://github.com/Bruce17/dependable/actions?query=workflow%3Acode-quality)
 [![Dependency Status](https://david-dm.org/Bruce17/dependable.svg?style=flat-square)](https://david-dm.org/Bruce17/dependable)
 [![devDependency Status](https://david-dm.org/Bruce17/dependable/dev-status.svg?style=flat-square)](https://david-dm.org/Bruce17/dependable?type=dev)
-
-**Coveralls**:
 [![coverage:?](https://img.shields.io/coveralls/Bruce17/dependable/master.svg?style=flat-square)](https://coveralls.io/r/Bruce17/dependable)
-
-**Tarvis CI**:
-[![Build Status - Travis CI](https://travis-ci.org/Bruce17/dependable.svg?branch=master)](https://travis-ci.org/Bruce17/dependable)
-
-**AppVeyor CI**:
-[![Build status - AppVeyor CI](https://ci.appveyor.com/api/projects/status/me1uol5uvaak0xtg/branch/master?svg=true)](https://ci.appveyor.com/project/Bruce17/dependable/branch/master)
-
-**Snyk**:
-[![Known Vulnerabilities](https://snyk.io/test/github/bruce17/dependable/badge.svg)](https://snyk.io/test/github/bruce17/dependable)
 
 
 ## Example
