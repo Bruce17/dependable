@@ -5,6 +5,8 @@
 - Remove support for old Node.js versions < v10 to use latest build tools
 - Remove Codeclimate and Codacy
 - Replace Travis with GitHub actions
+- Setup matrix build on GitHub actions
+- Fix coveralls run on GitHub action
 
 
 # 1.3.0
