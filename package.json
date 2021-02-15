@@ -35,8 +35,8 @@
   "scripts": {
     "lint": "eslint source/",
     "mocha": "_mocha -b -R spec",
-    "test-cov": "nyc npm run mocha",
-    "test-coveralls": "nyc npm run mocha && nyc report --reporter=text-lcov | node ./node_modules/coveralls/bin/coveralls.js",
+    "test-cov": "nyc --reporter=lcov npm run mocha",
+    "test-coveralls": "npm run test-cov && nyc report --reporter=text-lcov | node ./node_modules/coveralls/bin/coveralls.js",
     "test": "npm run lint && npm run mocha",
     "test-watch": "mocha -R progress --watch",
     "generate-docs": "./node_modules/.bin/jsdoc --destination docs --package package.json --readme README.md --recurse source"
